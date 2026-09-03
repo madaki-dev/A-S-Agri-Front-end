@@ -1579,7 +1579,6 @@ td {
   }
 }
 
-
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -1595,19 +1594,26 @@ td {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
   border: none;
   background: transparent;
-  padding: 4px;
+  color: #777;
   cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  color: #666;
+  padding: 0;
 }
 
 .password-toggle:hover {
   color: #222;
 }
 
-.password-toggle:focus {
-  outline: none;
+.eye-icon {
+  width: 20px;
+  height: 20px;
 }

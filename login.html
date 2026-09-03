@@ -23,22 +23,24 @@
             <input type="email" id="email" class="input" required autocomplete="email">
             <div class="error">Enter the email you registered with.</div>
           </div>
-          ```html
           <div class="field" id="f-password">
             <label for="password">Password</label>
 
             <div class="password-wrapper">
               <input type="password" id="password" class="input" required autocomplete="current-password">
+
               <button type="button" class="password-toggle" onclick="togglePassword('password', this)"
                 aria-label="Show password">
-                👁
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                </svg>
               </button>
             </div>
 
             <div class="error">Enter your password.</div>
           </div>
-          ```
-
           <div class="flex-between" style="margin-bottom:20px">
             <span></span>
             <a href="contact.html" class="muted" style="font-size:.85rem">Forgot password?</a>
@@ -81,18 +83,66 @@
     });
     function togglePassword(inputId, button) {
       const input = document.getElementById(inputId);
+      const icon = button.querySelector(".eye-icon");
 
       if (input.type === "password") {
         input.type = "text";
-        button.textContent = "🙈";
+
+        // Eye with slash
+        icon.innerHTML = `
+      <path d="M3 3L21 21"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"/>
+
+      <path d="M10.6 5.1C11.05 5.03 11.52 5 12 5
+               C18.5 5 22 12 22 12
+               C21.35 13.3 20.45 14.55 19.35 15.6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+      <path d="M6.2 6.2C4.2 7.55 2.8 9.55 2 12
+               C2 12 5.5 19 12 19
+               C14.15 19 16.05 18.2 17.65 17"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+      <path d="M9.88 9.88C9.32 10.44 9 11.19 9 12
+               C9 13.66 10.34 15 12 15
+               C12.81 15 13.56 14.68 14.12 14.12"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"/>
+    `;
+
         button.setAttribute("aria-label", "Hide password");
+
       } else {
         input.type = "password";
-        button.textContent = "👁";
+
+        // Normal eye
+        icon.innerHTML = `
+      <path d="M2 12C2 12 5.5 5 12 5
+               C18.5 5 22 12 22 12
+               C22 12 18.5 19 12 19
+               C5.5 19 2 12 2 12Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+      <circle cx="12" cy="12" r="3"
+              stroke="currentColor"
+              stroke-width="2"/>
+    `;
+
         button.setAttribute("aria-label", "Show password");
       }
     }
-
   </script>
 </body>
 
