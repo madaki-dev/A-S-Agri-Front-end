@@ -1,140 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create your account — A&amp;S Ventures</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create your account — A&amp;S Ventures</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-root-prefix="">
-<header id="navbar"></header>
+  <header id="navbar"></header>
 
-<main class="auth-shell">
-  <div class="container">
-    <div class="auth-card" style="max-width:520px">
-      <h1>Join A&amp;S Ventures</h1>
-      <p class="muted">Create an account to start buying or selling agricultural products.</p>
+  <main class="auth-shell">
+    <div class="container">
+      <div class="auth-card" style="max-width:520px">
+        <h1>Join A&amp;S Ventures</h1>
+        <p class="muted">Create an account to start buying or selling agricultural products.</p>
 
-      <form id="signup-form" novalidate>
-        <div class="field">
-          <label>I want to join as</label>
-          <div class="radio-group">
-            <label class="radio-card selected" id="card-buyer">
-              <input type="radio" name="accountType" value="Buyer" checked>
-              <strong>Buyer</strong>
-              <span>Find and purchase agricultural products</span>
-            </label>
-            <label class="radio-card" id="card-farmer">
-              <input type="radio" name="accountType" value="Farmer">
-              <strong>Farmer / Seller</strong>
-              <span>List products and reach buyers</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="field" id="f-fullName">
-          <label for="fullName">Full name</label>
-          <input type="text" id="fullName" class="input" required>
-          <div class="error">Enter your full name.</div>
-        </div>
-
-        <div class="field-row">
-          <div class="field" id="f-email">
-            <label for="email">Email</label>
-            <input type="email" id="email" class="input" required>
-            <div class="error">Enter a valid email.</div>
-          </div>
-          <div class="field" id="f-phone">
-            <label for="phone">Phone number</label>
-            <input type="tel" id="phone" class="input" required placeholder="080…">
-            <div class="error">Enter your phone number.</div>
-          </div>
-        </div>
-
-        <div id="farmer-fields" style="display:none">
+        <form id="signup-form" novalidate>
           <div class="field">
-            <label for="businessName">Business / farm name <span class="muted" style="font-weight:400">(optional for now)</span></label>
-            <input type="text" id="businessName" class="input" placeholder="e.g. Adaeze Farms">
-            <p class="hint">Saved on this device for your profile. We'll add this to your account once it's supported on the backend.</p>
+            <label>I want to join as</label>
+            <div class="radio-group">
+              <label class="radio-card selected" id="card-buyer">
+                <input type="radio" name="accountType" value="Buyer" checked>
+                <strong>Buyer</strong>
+                <span>Find and purchase agricultural products</span>
+              </label>
+              <label class="radio-card" id="card-farmer">
+                <input type="radio" name="accountType" value="Farmer">
+                <strong>Farmer / Seller</strong>
+                <span>List products and reach buyers</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <div class="field-row">
-          <div class="field" id="f-password">
-            <label for="password">Password</label>
-            <input type="password" id="password" class="input" required autocomplete="new-password">
-            <div class="error">Password is required.</div>
+          <div class="field" id="f-fullName">
+            <label for="fullName">Full name</label>
+            <input type="text" id="fullName" class="input" required>
+            <div class="error">Enter your full name.</div>
           </div>
-          <div class="field" id="f-confirm">
-            <label for="confirmPassword">Confirm password</label>
-            <input type="password" id="confirmPassword" class="input" required autocomplete="new-password">
-            <div class="error">Passwords must match.</div>
+
+          <div class="field-row">
+            <div class="field" id="f-email">
+              <label for="email">Email</label>
+              <input type="email" id="email" class="input" required>
+              <div class="error">Enter a valid email.</div>
+            </div>
+            <div class="field" id="f-phone">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" class="input" required placeholder="080…">
+              <div class="error">Enter your phone number.</div>
+            </div>
           </div>
-        </div>
 
-        <div class="field" id="f-terms">
-          <label class="checkbox-row">
-            <input type="checkbox" id="terms">
-            <span>I agree to A&amp;S Ventures' Terms of Service and Privacy Policy.</span>
-          </label>
-          <div class="error">You need to accept the terms to continue.</div>
-        </div>
+          <div id="farmer-fields" style="display:none">
+            <div class="field">
+              <label for="businessName">Business / farm name <span class="muted" style="font-weight:400">(optional for
+                  now)</span></label>
+              <input type="text" id="businessName" class="input" placeholder="e.g. Adaeze Farms">
+              <p class="hint">Saved on this device for your profile. We'll add this to your account once it's supported
+                on the backend.</p>
+            </div>
+          </div>
 
-        <button type="submit" class="btn btn-primary btn-block" id="signup-btn">Create account</button>
-      </form>
+          <div class="field-row">
+            <div class="field" id="f-password">
+              <label for="password">Password</label>
 
-      <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+              <div class="password-wrapper">
+                <input type="password" id="password" class="input" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePassword('password', this)"
+                  aria-label="Show password">
+                  👁
+                </button>
+              </div>
+
+              <div class="error">Password is required.</div>
+            </div>
+
+            <div class="field" id="f-confirm">
+              <label for="confirmPassword">Confirm password</label>
+
+              <div class="password-wrapper">
+                <input type="password" id="confirmPassword" class="input" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)"
+                  aria-label="Show password">
+                  👁
+                </button>
+              </div>
+
+              <div class="error">Passwords must match.</div>
+            </div>
+            <div class="field" id="f-terms">
+              <label class="checkbox-row">
+                <input type="checkbox" id="terms">
+                <span>I agree to A&amp;S Ventures' Terms of Service and Privacy Policy.</span>
+              </label>
+              <div class="error">You need to accept the terms to continue.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="signup-btn">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<footer id="footer"></footer>
+  <footer id="footer"></footer>
 
-<script src="js/api.js"></script>
-<script src="js/extras.js"></script>
-<script src="js/ui.js"></script>
-<script>
-document.querySelectorAll('input[name="accountType"]').forEach(r => {
-  r.addEventListener("change", () => {
-    document.getElementById("card-buyer").classList.toggle("selected", r.value === "Buyer" && r.checked);
-    document.getElementById("card-farmer").classList.toggle("selected", r.value === "Farmer" && r.checked);
-    document.getElementById("farmer-fields").style.display = document.querySelector('input[name="accountType"]:checked').value === "Farmer" ? "block" : "none";
-  });
-});
-document.getElementById("signup-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const fullName = document.getElementById("fullName").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const accountType = document.querySelector('input[name="accountType"]:checked').value;
-  const terms = document.getElementById("terms").checked;
+  <script src="js/api.js"></script>
+  <script src="js/extras.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.querySelectorAll('input[name="accountType"]').forEach(r => {
+      r.addEventListener("change", () => {
+        document.getElementById("card-buyer").classList.toggle("selected", r.value === "Buyer" && r.checked);
+        document.getElementById("card-farmer").classList.toggle("selected", r.value === "Farmer" && r.checked);
+        document.getElementById("farmer-fields").style.display = document.querySelector('input[name="accountType"]:checked').value === "Farmer" ? "block" : "none";
+      });
+    });
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const accountType = document.querySelector('input[name="accountType"]:checked').value;
+      const terms = document.getElementById("terms").checked;
 
-  let ok = true;
-  const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
-  check("f-fullName", !!fullName);
-  check("f-email", /\S+@\S+\.\S+/.test(email));
-  check("f-phone", phone.length >= 7);
-  check("f-password", password.length >= 6);
-  check("f-confirm", password === confirmPassword && confirmPassword.length > 0);
-  check("f-terms", terms);
-  if (!ok) return;
+      let ok = true;
+      const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
+      check("f-fullName", !!fullName);
+      check("f-email", /\S+@\S+\.\S+/.test(email));
+      check("f-phone", phone.length >= 7);
+      check("f-password", password.length >= 6);
+      check("f-confirm", password === confirmPassword && confirmPassword.length > 0);
+      check("f-terms", terms);
+      if (!ok) return;
 
-  const btn = document.getElementById("signup-btn");
-  btn.disabled = true; btn.textContent = "Creating account…";
-  try{
-    const res = await API.register({ fullName, email, phone, password, confirmPassword, accountType });
-    setSession(res.token, res.user);
-    const businessName = document.getElementById("businessName").value.trim();
-    if (businessName) localStorage.setItem("asv_x_business_" + res.user._id, businessName);
-    toast("Account created — welcome to A&S Ventures.");
-    setTimeout(() => { window.location.href = dashboardHref(); }, 600);
-  }catch(err){
-    toast(err.message, "error");
-    btn.disabled = false; btn.textContent = "Create account";
-  }
-});
-</script>
+      const btn = document.getElementById("signup-btn");
+      btn.disabled = true; btn.textContent = "Creating account…";
+      try {
+        const res = await API.register({ fullName, email, phone, password, confirmPassword, accountType });
+        setSession(res.token, res.user);
+        const businessName = document.getElementById("businessName").value.trim();
+        if (businessName) localStorage.setItem("asv_x_business_" + res.user._id, businessName);
+        toast("Account created — welcome to A&S Ventures.");
+        setTimeout(() => { window.location.href = dashboardHref(); }, 600);
+      } catch (err) {
+        toast(err.message, "error");
+        btn.disabled = false; btn.textContent = "Create account";
+      }
+    });
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+
+      if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "🙈";
+        button.setAttribute("aria-label", "Hide password");
+      } else {
+        input.type = "password";
+        button.textContent = "👁";
+        button.setAttribute("aria-label", "Show password");
+      }
+    }
+  </script>
 </body>
+
 </html>

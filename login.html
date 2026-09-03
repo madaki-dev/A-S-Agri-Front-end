@@ -1,71 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Log in — A&amp;S Ventures</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — A&amp;S Ventures</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-root-prefix="">
-<header id="navbar"></header>
+  <header id="navbar"></header>
 
-<main class="auth-shell">
-  <div class="container">
-    <div class="auth-card">
-      <h1>Welcome back</h1>
-      <p class="muted">Log in to buy, sell, and manage your A&amp;S Ventures account.</p>
+  <main class="auth-shell">
+    <div class="container">
+      <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="muted">Log in to buy, sell, and manage your A&amp;S Ventures account.</p>
 
-      <form id="login-form" novalidate>
-        <div class="field" id="f-email">
-          <label for="email">Email address</label>
-          <input type="email" id="email" class="input" required autocomplete="email">
-          <div class="error">Enter the email you registered with.</div>
-        </div>
-        <div class="field" id="f-password">
-          <label for="password">Password</label>
-          <input type="password" id="password" class="input" required autocomplete="current-password">
-          <div class="error">Enter your password.</div>
-        </div>
-        <div class="flex-between" style="margin-bottom:20px">
-          <span></span>
-          <a href="contact.html" class="muted" style="font-size:.85rem">Forgot password?</a>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block" id="login-btn">Log in</button>
-      </form>
+        <form id="login-form" novalidate>
+          <div class="field" id="f-email">
+            <label for="email">Email address</label>
+            <input type="email" id="email" class="input" required autocomplete="email">
+            <div class="error">Enter the email you registered with.</div>
+          </div>
+          ```html
+          <div class="field" id="f-password">
+            <label for="password">Password</label>
 
-      <p class="auth-switch">Don't have an account? <a href="signup.html">Create account</a></p>
+            <div class="password-wrapper">
+              <input type="password" id="password" class="input" required autocomplete="current-password">
+              <button type="button" class="password-toggle" onclick="togglePassword('password', this)"
+                aria-label="Show password">
+                👁
+              </button>
+            </div>
+
+            <div class="error">Enter your password.</div>
+          </div>
+          ```
+
+          <div class="flex-between" style="margin-bottom:20px">
+            <span></span>
+            <a href="contact.html" class="muted" style="font-size:.85rem">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="login-btn">Log in</button>
+        </form>
+
+        <p class="auth-switch">Don't have an account? <a href="signup.html">Create account</a></p>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<footer id="footer"></footer>
+  <footer id="footer"></footer>
 
-<script src="js/api.js"></script>
-<script src="js/extras.js"></script>
-<script src="js/ui.js"></script>
-<script>
-document.getElementById("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  <script src="js/api.js"></script>
+  <script src="js/extras.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-  document.getElementById("f-email").classList.toggle("has-error", !email);
-  document.getElementById("f-password").classList.toggle("has-error", !password);
-  if (!email || !password) return;
+      document.getElementById("f-email").classList.toggle("has-error", !email);
+      document.getElementById("f-password").classList.toggle("has-error", !password);
+      if (!email || !password) return;
 
-  const btn = document.getElementById("login-btn");
-  btn.disabled = true; btn.textContent = "Logging in…";
-  try{
-    const res = await API.login({ email, password });
-    setSession(res.token, res.user);
-    toast("Login successful.");
-    const next = qs("next");
-    setTimeout(() => { window.location.href = next || dashboardHref(); }, 500);
-  }catch(err){
-    toast(err.message, "error");
-    btn.disabled = false; btn.textContent = "Log in";
-  }
-});
-</script>
+      const btn = document.getElementById("login-btn");
+      btn.disabled = true; btn.textContent = "Logging in…";
+      try {
+        const res = await API.login({ email, password });
+        setSession(res.token, res.user);
+        toast("Login successful.");
+        const next = qs("next");
+        setTimeout(() => { window.location.href = next || dashboardHref(); }, 500);
+      } catch (err) {
+        toast(err.message, "error");
+        btn.disabled = false; btn.textContent = "Log in";
+      }
+    });
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+
+      if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "🙈";
+        button.setAttribute("aria-label", "Hide password");
+      } else {
+        input.type = "password";
+        button.textContent = "👁";
+        button.setAttribute("aria-label", "Show password");
+      }
+    }
+
+  </script>
 </body>
+
 </html>
