@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace — A&amp;S Ventures</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root-prefix="">
+<header id="navbar"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="container">
+      <h1>Agricultural Marketplace</h1>
+      <p class="lede mb-0">Discover agricultural products from farmers and sellers.</p>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="market-toolbar">
+        <div class="search-bar">
+          <input type="text" id="search-input" class="input" placeholder="Search for maize, fertilizer, rice, plantain…">
+        </div>
+      </div>
+
+      <div class="filter-bar" id="filter-bar">
+        <select id="filter-category" class="input">
+          <option value="">All categories</option>
+          <option>Grains</option><option>Vegetables</option><option>Fruits</option>
+          <option>Tubers</option><option>Seeds</option><option>Fertilizers</option>
+          <option>Livestock</option><option>Farm Inputs</option><option>Other</option>
+        </select>
+        <select id="filter-location" class="input"><option value="">All locations</option></select>
+        <select id="filter-price" class="input">
+          <option value="">Any price</option>
+          <option value="0-10000">Under ₦10,000</option>
+          <option value="10000-50000">₦10,000 – ₦50,000</option>
+          <option value="50000-1000000">Above ₦50,000</option>
+        </select>
+        <select id="filter-availability" class="input">
+          <option value="">Any availability</option>
+          <option value="in">In stock</option>
+        </select>
+        <select id="filter-seller" class="input">
+          <option value="">Any seller type</option>
+          <option value="verified">Verified sellers only</option>
+        </select>
+        <button id="clear-filters" class="btn btn-ghost btn-sm">Clear filters</button>
+      </div>
+
+      <p class="results-count" id="results-count"></p>
+      <div id="product-list"></div>
+      <div class="text-center" style="margin-top:32px">
+        <button id="load-more-btn" class="btn btn-secondary" style="display:none">Load more</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<script src="js/api.js"></script>
+<script src="js/extras.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/product-card.js"></script>
+<script>
+(function(){
+  document.getElementById("search-input").insertAdjacentHTML("beforebegin", ICONS.search);
+})();
+
+let ALL_PRODUCTS = [];
+let FILTERED = [];
+let VISIBLE_COUNT = 12;
+const PAGE_SIZE = 12;
+
+async function fetchAllProducts(){
+  const first = await API.getProducts({ page: 1 });
+  let all = [...first];
+  const totalPages = Number(first.__pagination?.totalPages) || 1;
+  const cap = Math.min(totalPages, 8); // sensible cap for a prototype
+  const rest = [];
+  for (let p = 2; p <= cap; p++) rest.push(API.getProducts({ page: p }));
+  const restResults = await Promise.all(rest);
+  restResults.forEach(r => all = all.concat(r));
+  return all;
+}
+
+function populateLocationFilter(products){
+  const sel = document.getElementById("filter-location");
+  const locations = [...new Set(products.map(p => p.location).filter(Boolean))].sort();
+  locations.forEach(loc => {
+    const opt = document.createElement("option");
+    opt.value = loc; opt.textContent = loc;
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilters(){
+  const term = document.getElementById("search-input").value.trim().toLowerCase();
+  const category = document.getElementById("filter-category").value;
+  const location = document.getElementById("filter-location").value;
+  const priceRange = document.getElementById("filter-price").value;
+  const availability = document.getElementById("filter-availability").value;
+  const sellerType = document.getElementById("filter-seller").value;
+
+  FILTERED = ALL_PRODUCTS.filter(p => {
+    if (term && !p.productName.toLowerCase().includes(term)) return false;
+    if (category && p.category !== category) return false;
+    if (location && p.location !== location) return false;
+    if (availability === "in" && p.stock <= 0) return false;
+    if (sellerType === "verified" && !(p.farmer && Extras.isVerified(p.farmer._id))) return false;
+    if (priceRange){
+      const [min, max] = priceRange.split("-").map(Number);
+      if (p.sellingPrice < min || p.sellingPrice > max) return false;
+    }
+    return true;
+  });
+
+  VISIBLE_COUNT = PAGE_SIZE;
+  renderList();
+}
+
+function renderList(){
+  const mount = document.getElementById("product-list");
+  const slice = FILTERED.slice(0, VISIBLE_COUNT);
+  renderProductGrid(mount, slice);
+  document.getElementById("results-count").textContent =
+    FILTERED.length ? `Showing ${slice.length} of ${FILTERED.length} products` : "";
+  const loadMoreBtn = document.getElementById("load-more-btn");
+  loadMoreBtn.style.display = VISIBLE_COUNT < FILTERED.length ? "inline-flex" : "none";
+}
+
+document.getElementById("load-more-btn").addEventListener("click", () => {
+  VISIBLE_COUNT += PAGE_SIZE;
+  renderList();
+});
+["search-input"].forEach(id => document.getElementById(id).addEventListener("input", debounce(applyFilters, 250)));
+["filter-category","filter-location","filter-price","filter-availability","filter-seller"].forEach(id =>
+  document.getElementById(id).addEventListener("change", applyFilters)
+);
+document.getElementById("clear-filters").addEventListener("click", () => {
+  document.getElementById("search-input").value = "";
+  ["filter-category","filter-location","filter-price","filter-availability","filter-seller"].forEach(id => document.getElementById(id).value = "");
+  applyFilters();
+});
+function debounce(fn, ms){ let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+// preselect category from query string (e.g. from a category link)
+const presetCategory = qs("category");
+if (presetCategory) document.getElementById("filter-category").value = presetCategory;
+const presetSearch = qs("q");
+if (presetSearch) document.getElementById("search-input").value = presetSearch;
+
+(async function init(){
+  const mount = document.getElementById("product-list");
+  mount.innerHTML = skeletonGrid(8);
+  try{
+    ALL_PRODUCTS = await fetchAllProducts();
+    populateLocationFilter(ALL_PRODUCTS);
+    applyFilters();
+  }catch(err){
+    mount.innerHTML = emptyState("Couldn't load the marketplace", err.message);
+  }
+})();
+</script>
+</body>
+</html>

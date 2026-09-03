@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — A&amp;S Ventures</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-root-prefix="">
+  <header id="navbar"></header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Get in touch</h1>
+        <p class="lede mb-0">Questions about buying, selling, or partnering with A&amp;S Ventures? We'd love to hear
+          from you.</p>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="container split-panel" style="grid-template-columns:1.3fr 1fr;align-items:flex-start">
+        <form id="contact-form" class="card" novalidate>
+          <div class="field" id="f-name"><label for="name">Name</label><input id="name" class="input" required></div>
+          <div class="field" id="f-email"><label for="email">Email</label><input id="email" type="email" class="input"
+              required></div>
+          <div class="field"><label for="subject">Subject</label><input id="subject" class="input"
+              placeholder="What's this about?"></div>
+          <div class="field" id="f-message"><label for="message">Message</label><textarea id="message" class="input"
+              required></textarea></div>
+          <button type="submit" class="btn btn-primary btn-block" id="send-btn">Send message</button>
+        </form>
+
+        <div class="card">
+          <h3>Reach us directly</h3>
+          <p class="muted" style="font-size:.9rem">📱 WhatsApp: <a href="#" style="color:var(--green-700)">+234 802 379
+              9337</a></p>
+          <p class="muted" style="font-size:.9rem">✉️ Email: <a href="mailto:hello@asventures.ng"
+              style="color:var(--green-700)">as.logistics.td@gmail.com</a></p>
+          <p class="muted" style="font-size:.9rem">☎️ Phone: +234 904 326 8594</p>
+          <p class="muted" style="font-size:.9rem">📍 Location: Abuja, Nigeria</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+  <script src="js/api.js"></script>
+  <script src="js/extras.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const subject = document.getElementById("subject").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      let ok = true;
+      const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
+      check("f-name", !!name);
+      check("f-email", /\S+@\S+\.\S+/.test(email));
+      check("f-message", !!message);
+      if (!ok) return;
+
+      const btn = document.getElementById("send-btn");
+      btn.disabled = true; btn.textContent = "Sending…";
+      try {
+        await API.sendContact({ name, email, subject, message });
+        toast("Your message has been sent.");
+        document.getElementById("contact-form").reset();
+      } catch (err) {
+        toast(err.message, "error");
+      } finally {
+        btn.disabled = false; btn.textContent = "Send message";
+      }
+    });
+  </script>
+</body>
+
+</html>

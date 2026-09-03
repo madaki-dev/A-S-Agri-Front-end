@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — A&amp;S Ventures</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root-prefix="">
+<header id="navbar"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="container"><h1>Checkout</h1><p class="lede mb-0">Confirm your delivery details to complete your order.</p></div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="split-panel" style="align-items:flex-start;grid-template-columns:1.3fr 1fr">
+        <form id="checkout-form" class="card" novalidate>
+          <h3>Delivery details</h3>
+          <div class="field-row">
+            <div class="field" id="f-fullname"><label for="fullname">Full name</label><input id="fullname" class="input" required></div>
+            <div class="field" id="f-phone"><label for="phone">Phone</label><input id="phone" class="input" required></div>
+          </div>
+          <div class="field-row">
+            <div class="field" id="f-whatsapp"><label for="whatsapp">WhatsApp number</label><input id="whatsapp" class="input" required></div>
+            <div class="field" id="f-state"><label for="state">State</label>
+              <select id="state" class="input" required><option value="">Select state</option></select>
+            </div>
+          </div>
+          <div class="field" id="f-address"><label for="address">Delivery address</label><textarea id="address" class="input" required></textarea></div>
+          <button type="submit" class="btn btn-primary btn-block" id="pay-btn">Continue to payment</button>
+          <p class="hint text-center">You'll be redirected to Flutterwave to complete payment securely.</p>
+        </form>
+
+        <div class="card" id="summary-card">
+          <h3>Order summary</h3>
+          <div id="summary-body">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<script src="js/api.js"></script>
+<script src="js/extras.js"></script>
+<script src="js/ui.js"></script>
+<script>
+const user = requireAuth("", "Buyer");
+let CART = [];
+let SUBTOTAL = 0;
+
+async function loadSummary(){
+  const body = document.getElementById("summary-body");
+  try{
+    CART = await API.getCart();
+    if (!CART.length){
+      body.innerHTML = emptyState("Your cart is empty", "Add products before checking out.");
+      document.getElementById("pay-btn").disabled = true;
+      return;
+    }
+    SUBTOTAL = CART.reduce((s,i) => s + (i.product ? i.product.sellingPrice * i.quantity : 0), 0);
+    body.innerHTML = CART.map(i => `
+      <div class="flex-between" style="margin-bottom:8px;font-size:.9rem">
+        <span>${escapeHtml(i.product?.productName || "Product")} × ${i.quantity}</span>
+        <span>${formatNaira((i.product?.sellingPrice||0) * i.quantity)}</span>
+      </div>`).join("") +
+      `<div class="divider"></div>
+       <div class="flex-between"><span class="muted">Subtotal</span><strong>${formatNaira(SUBTOTAL)}</strong></div>
+       <div class="flex-between" id="transport-row"><span class="muted">Delivery</span><span class="muted">Select a state</span></div>
+       <div class="divider"></div>
+       <div class="flex-between" style="font-size:1.1rem"><strong>Total</strong><strong id="total-value">${formatNaira(SUBTOTAL)}</strong></div>`;
+  }catch(err){
+    body.innerHTML = emptyState("Couldn't load your cart", err.message);
+  }
+}
+
+async function loadStates(){
+  const sel = document.getElementById("state");
+  try{
+    const prices = await API.getTransportPrices();
+    prices.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.state; opt.textContent = t.state; opt.dataset.price = t.transportPrice;
+      sel.appendChild(opt);
+    });
+  }catch(err){ toast("Couldn't load delivery pricing.", "error"); }
+}
+
+document.getElementById("state").addEventListener("change", (e) => {
+  const opt = e.target.selectedOptions[0];
+  const price = opt?.dataset.price ? Number(opt.dataset.price) : null;
+  const row = document.getElementById("transport-row");
+  const totalEl = document.getElementById("total-value");
+  if (row){
+    row.innerHTML = `<span class="muted">Delivery</span><span>${price != null ? formatNaira(price) : "—"}</span>`;
+  }
+  if (totalEl && price != null) totalEl.textContent = formatNaira(SUBTOTAL + price);
+});
+
+document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fullname = document.getElementById("fullname").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const whatsapp = document.getElementById("whatsapp").value.trim();
+  const state = document.getElementById("state").value;
+  const address = document.getElementById("address").value.trim();
+
+  let ok = true;
+  const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
+  check("f-fullname", !!fullname);
+  check("f-phone", !!phone);
+  check("f-whatsapp", !!whatsapp);
+  check("f-state", !!state);
+  check("f-address", !!address);
+  if (!ok){ toast("Please complete every field.", "error"); return; }
+
+  const btn = document.getElementById("pay-btn");
+  btn.disabled = true; btn.textContent = "Redirecting to payment…";
+  try{
+    const res = await API.initializePayment({ fullname, phone, whatsapp, state, address });
+    if (res.paymentLink){
+      window.location.href = res.paymentLink;
+    } else {
+      throw new Error("Payment link was not returned.");
+    }
+  }catch(err){
+    toast(err.message, "error");
+    btn.disabled = false; btn.textContent = "Continue to payment";
+  }
+});
+
+if (user){ loadSummary(); loadStates(); }
+</script>
+</body>
+</html>

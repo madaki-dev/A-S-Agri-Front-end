@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile & Settings — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head"><div><h1>Profile & Settings</h1></div></div>
+    <div id="profile-root"><div class="skeleton" style="height:260px"></div></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+const user = requireAuth("../", "Buyer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "orders.html", label: "Orders" },
+  { href: "favorites.html", label: "Favorites" },
+  { href: "messages.html", label: "Messages" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "profile.html", "");
+
+async function load(){
+  const root = document.getElementById("profile-root");
+  try{
+    const profile = await API.getProfile();
+    setSession(getToken(), profile);
+    root.innerHTML = `
+    <div class="split-panel" style="align-items:flex-start;grid-template-columns:1fr 1.3fr">
+      <div class="card text-center">
+        <div class="avatar-lg" style="margin:0 auto 14px;width:88px;height:88px;font-size:1.8rem">
+          ${profile.profileImage ? `<img src="${profile.profileImage}">` : initials(profile.fullName)}
+        </div>
+        <input type="file" id="avatar-input" accept="image/*" style="display:none">
+        <button class="btn btn-secondary btn-sm" id="avatar-btn">Change photo</button>
+      </div>
+      <div class="card">
+        <h3>Account details</h3>
+        <div class="field"><label>Full name</label><input class="input" value="${escapeHtml(profile.fullName)}" disabled></div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input class="input" value="${escapeHtml(profile.email)}" disabled></div>
+          <div class="field"><label>Phone</label><input class="input" value="${escapeHtml(profile.phone)}" disabled></div>
+        </div>
+        <p class="hint">Editing account details isn't available in this prototype yet.</p>
+      </div>
+    </div>`;
+
+    document.getElementById("avatar-btn").addEventListener("click", () => document.getElementById("avatar-input").click());
+    document.getElementById("avatar-input").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("image", file);
+      try{ await API.uploadProfileImage(fd); toast("Profile photo updated."); load(); }
+      catch(err){ toast(err.message, "error"); }
+    });
+  }catch(err){
+    root.innerHTML = emptyState("Couldn't load your profile", err.message);
+  }
+}
+if (user) load();
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head"><div><h1>My Orders</h1></div></div>
+    <div id="orders-root"><div class="skeleton" style="height:300px"></div></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+const user = requireAuth("../", "Buyer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "orders.html", label: "Orders" },
+  { href: "favorites.html", label: "Favorites" },
+  { href: "messages.html", label: "Messages" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "orders.html", "");
+
+function statusBadge(status){ return `<span class="badge badge--status-${(status||"pending").toLowerCase()}">${status}</span>`; }
+
+function ratingWidget(order){
+  if (order.status !== "Delivered") return "";
+  return order.products.map(item => {
+    const farmerId = item.product?.farmer;
+    if (!farmerId) return "";
+    const alreadyRated = Extras.hasRated(farmerId, user._id, order._id);
+    return alreadyRated
+      ? `<span class="muted" style="font-size:.8rem">✓ You rated this seller</span>`
+      : `<button class="icon-btn" data-rate-farmer="${farmerId}" data-rate-order="${order._id}" data-rate-product="${escapeHtml(item.product?.productName||"")}">Rate seller</button>`;
+  }).join(" ");
+}
+
+function openRatingModal(farmerId, orderId, productName){
+  let stars = 0;
+  openModal(`
+    <button class="modal__close" onclick="closeModal()">&times;</button>
+    <h3>Rate your seller</h3>
+    <p class="muted">How was your experience buying ${escapeHtml(productName)}?</p>
+    <div id="star-picker" style="font-size:1.6rem;cursor:pointer;margin-bottom:16px">${[1,2,3,4,5].map(i=>`<span data-star="${i}">☆</span>`).join(" ")}</div>
+    <div class="field"><textarea id="rate-comment" class="input" placeholder="Optional comment"></textarea></div>
+    <button class="btn btn-primary btn-block" id="submit-rating">Submit rating</button>
+  `);
+  document.querySelectorAll("#star-picker [data-star]").forEach(el => {
+    el.addEventListener("click", () => {
+      stars = Number(el.dataset.star);
+      document.querySelectorAll("#star-picker [data-star]").forEach(s => s.textContent = Number(s.dataset.star) <= stars ? "★" : "☆");
+    });
+  });
+  document.getElementById("submit-rating").addEventListener("click", () => {
+    if (!stars){ toast("Pick a star rating.", "error"); return; }
+    Extras.addRating(farmerId, { buyerId: user._id, buyerName: user.fullName, orderId, stars, comment: document.getElementById("rate-comment").value.trim() });
+    toast("Thanks for your feedback.");
+    closeModal();
+    load();
+  });
+}
+
+function orderCard(o){
+  const names = o.products.map(p => p.product?.productName).filter(Boolean).join(", ");
+  return `<div class="card" style="margin-bottom:14px">
+    <div class="flex-between">
+      <div>
+        <strong>${escapeHtml(names)}</strong>
+        <div class="muted" style="font-size:.85rem">Order ${o._id.slice(-6).toUpperCase()} · ${formatDate(o.createdAt)}</div>
+      </div>
+      ${statusBadge(o.status)}
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <span class="muted">Delivery to ${escapeHtml(o.delivery?.state||"")}</span>
+      <strong>${formatNaira(o.totalAmount)}</strong>
+    </div>
+    <div style="margin-top:10px">${ratingWidget(o)}</div>
+  </div>`;
+}
+
+async function load(){
+  const root = document.getElementById("orders-root");
+  try{
+    const orders = await API.getMyOrders();
+    root.innerHTML = orders.length
+      ? orders.map(orderCard).join("")
+      : emptyState("No orders yet", "Products you buy will show up here.");
+    root.querySelectorAll("[data-rate-farmer]").forEach(btn => {
+      btn.addEventListener("click", () => openRatingModal(btn.dataset.rateFarmer, btn.dataset.rateOrder, btn.dataset.rateProduct));
+    });
+  }catch(err){
+    root.innerHTML = emptyState("Couldn't load your orders", err.message);
+  }
+}
+if (user) load();
+</script>
+</body>
+</html>

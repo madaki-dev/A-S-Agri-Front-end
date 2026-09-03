@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyer dashboard — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head">
+      <div><h1 id="welcome-heading">Welcome back</h1><p class="muted mb-0">Here's what's happening with your orders.</p></div>
+      <a href="../marketplace.html" class="btn btn-primary">Browse marketplace</a>
+    </div>
+
+    <div class="stat-cards" id="stat-cards">
+      <div class="stat-card"><div class="skeleton" style="height:40px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:40px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:40px"></div></div>
+      <div class="stat-card"><div class="skeleton" style="height:40px"></div></div>
+    </div>
+
+    <div class="flex-between" style="margin-bottom:14px">
+      <h3 class="mb-0">Recent orders</h3>
+      <a href="orders.html" class="muted" style="font-size:.9rem">View all →</a>
+    </div>
+    <div id="orders-table"></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+const user = requireAuth("../", "Buyer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "orders.html", label: "Orders" },
+  { href: "favorites.html", label: "Favorites" },
+  { href: "messages.html", label: "Messages" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+
+function statusBadge(status){ return `<span class="badge badge--status-${(status||"pending").toLowerCase()}">${status}</span>`; }
+
+function orderRow(o){
+  const names = o.products.map(p => p.product?.productName).filter(Boolean).join(", ");
+  return `<tr>
+    <td class="muted">${o._id.slice(-6).toUpperCase()}</td>
+    <td>${escapeHtml(names)}</td>
+    <td>${formatDate(o.createdAt)}</td>
+    <td>${formatNaira(o.totalAmount)}</td>
+    <td>${statusBadge(o.status)}</td>
+  </tr>`;
+}
+
+(async function init(){
+  if (!user) return;
+  document.getElementById("welcome-heading").textContent = `Welcome back, ${user.fullName.split(" ")[0]}`;
+  renderDashSidebar(SIDEBAR_LINKS, "dashboard.html", "");
+
+  try{
+    const orders = await API.getMyOrders();
+    const active = orders.filter(o => !["Delivered","Cancelled"].includes(o.status)).length;
+    const completed = orders.filter(o => o.status === "Delivered").length;
+    const saved = Extras.getFavorites(user._id).length;
+    const messages = Extras.getConversations(user._id).length;
+
+    document.getElementById("stat-cards").innerHTML = `
+      <div class="stat-card"><div class="stat-card__label">Active orders</div><div class="stat-card__value">${active}</div></div>
+      <div class="stat-card"><div class="stat-card__label">Completed orders</div><div class="stat-card__value">${completed}</div></div>
+      <div class="stat-card"><div class="stat-card__label">Saved products</div><div class="stat-card__value">${saved}</div></div>
+      <div class="stat-card"><div class="stat-card__label">Messages</div><div class="stat-card__value">${messages}</div></div>`;
+
+    document.getElementById("orders-table").innerHTML = orders.length
+      ? `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Products</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+         <tbody>${orders.slice(0,8).map(orderRow).join("")}</tbody></table></div>`
+      : emptyState("No orders yet", "Products you buy will show up here.");
+  }catch(err){
+    toast(err.message, "error");
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head"><div><h1>Admin overview</h1><p class="muted mb-0">Platform-wide sales, orders, and seller verification.</p></div></div>
+
+    <div class="pill-nav">
+      <button class="active" data-tab="overview">Overview</button>
+      <button data-tab="orders">All Orders</button>
+      <button data-tab="sellers">Sellers</button>
+    </div>
+
+    <div id="tab-overview"><div class="skeleton" style="height:200px"></div></div>
+    <div id="tab-orders" style="display:none"></div>
+    <div id="tab-sellers" style="display:none"></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+const user = requireAuth("../", "Admin");
+const SIDEBAR_LINKS = [{ href: "dashboard.html", label: "Admin dashboard" }];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "dashboard.html", "");
+
+document.querySelectorAll(".pill-nav button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".pill-nav button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    ["overview","orders","sellers"].forEach(t => document.getElementById("tab-"+t).style.display = t===btn.dataset.tab ? "block" : "none");
+  });
+});
+
+function statusBadge(status){ return `<span class="badge badge--status-${(status||"pending").toLowerCase()}">${status}</span>`; }
+
+async function loadOverview(){
+  try{
+    const data = await API.getAdminDashboard();
+    document.getElementById("tab-overview").innerHTML = `
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-card__label">Total sales</div><div class="stat-card__value">${formatNaira(data.totalSales)}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Total orders</div><div class="stat-card__value">${data.totalOrders}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Commission earned</div><div class="stat-card__value">${formatNaira(data.commissionEarned)}</div></div>
+      </div>`;
+  }catch(err){
+    document.getElementById("tab-overview").innerHTML = emptyState("Couldn't load overview", err.message);
+  }
+}
+
+async function loadOrders(){
+  const mount = document.getElementById("tab-orders");
+  mount.innerHTML = `<div class="skeleton" style="height:260px"></div>`;
+  try{
+    const orders = await API.getAdminOrders();
+    if (!orders.length){ mount.innerHTML = emptyState("No orders yet", ""); return; }
+    mount.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Order</th><th>Buyer</th><th>Products</th><th>Total paid</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${orders.map(o => `
+        <tr>
+          <td class="muted">${o.orderId.slice(-6).toUpperCase()}</td>
+          <td>${escapeHtml(o.buyer?.fullname || o.buyer?.fullName || "Buyer")}</td>
+          <td>${escapeHtml(o.products.map(p=>p.product).join(", "))}</td>
+          <td>${formatNaira(o.totalPaid)}</td>
+          <td>${statusBadge(o.status)}</td>
+          <td>${formatDate(o.date)}</td>
+        </tr>`).join("")}</tbody>
+    </table></div>`;
+  }catch(err){
+    mount.innerHTML = emptyState("Couldn't load orders", err.message);
+  }
+}
+
+async function loadSellers(){
+  const mount = document.getElementById("tab-sellers");
+  mount.innerHTML = `<div class="skeleton" style="height:260px"></div>`;
+  mount.innerHTML = `<p class="hint" style="margin-bottom:16px">Seller list is derived from current product listings — a dedicated sellers endpoint would make this more reliable. Verification is stored locally as a prototype stand-in until the backend supports a real \`verified\` field on User.</p>`;
+  try{
+    const products = await API.getProducts({ page: 1 });
+    const sellers = {};
+    products.forEach(p => {
+      if (p.farmer) sellers[p.farmer._id] = sellers[p.farmer._id] || { ...p.farmer, count: 0 };
+      if (p.farmer) sellers[p.farmer._id].count++;
+    });
+    const list = Object.values(sellers);
+    if (!list.length){ mount.innerHTML += emptyState("No sellers yet", ""); return; }
+    mount.innerHTML += `<div class="table-wrap"><table>
+      <thead><tr><th>Seller</th><th>Phone</th><th>Products</th><th>Status</th><th></th></tr></thead>
+      <tbody>${list.map(s => `
+        <tr>
+          <td>${escapeHtml(s.fullName)}</td>
+          <td>${escapeHtml(s.phone||"")}</td>
+          <td>${s.count}</td>
+          <td id="status-${s._id}">${Extras.isVerified(s._id) ? `<span class="badge badge--verified">${ICONS.check} Verified</span>` : `<span class="badge badge--muted">Unverified</span>`}</td>
+          <td><button class="icon-btn" data-toggle-verify="${s._id}">${Extras.isVerified(s._id) ? "Revoke" : "Verify"}</button></td>
+        </tr>`).join("")}</tbody>
+    </table></div>`;
+    mount.querySelectorAll("[data-toggle-verify]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.toggleVerify;
+        const next = !Extras.isVerified(id);
+        Extras.setVerified(id, next);
+        toast(next ? "Seller verified." : "Verification revoked.");
+        loadSellers();
+      });
+    });
+  }catch(err){
+    mount.innerHTML += emptyState("Couldn't load sellers", err.message);
+  }
+}
+
+if (user){ loadOverview(); loadOrders(); loadSellers(); }
+</script>
+</body>
+</html>

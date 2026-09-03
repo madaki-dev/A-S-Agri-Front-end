@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment status — A&amp;S Ventures</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root-prefix="">
+<header id="navbar"></header>
+
+<main>
+  <section class="section" style="min-height:60vh;display:flex;align-items:center">
+    <div class="container text-center" style="max-width:520px">
+      <div id="status-root"><div class="skeleton" style="height:160px"></div></div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<script src="js/api.js"></script>
+<script src="js/extras.js"></script>
+<script src="js/ui.js"></script>
+<script>
+async function handleReturn(){
+  const root = document.getElementById("status-root");
+  const status = qs("status");
+  const transactionId = qs("transaction_id");
+
+  if (status === "cancelled"){
+    root.innerHTML = `<h1>Payment cancelled</h1><p class="lede">You cancelled the payment before it completed. Your cart is still saved.</p>
+      <a href="cart.html" class="btn btn-primary">Back to cart</a>`;
+    return;
+  }
+  if (!transactionId){
+    root.innerHTML = `<h1>We couldn't confirm this payment</h1><p class="lede">No transaction reference was found in the link. If you completed payment, check your order history.</p>
+      <a href="buyer/orders.html" class="btn btn-primary">View my orders</a>`;
+    return;
+  }
+  try{
+    const res = await API.verifyPayment(transactionId);
+    root.innerHTML = `
+      <h1>Payment confirmed 🎉</h1>
+      <p class="lede">${escapeHtml(res.message || "Your order has been placed successfully.")}</p>
+      ${res.order ? `<p class="muted">Order reference: ${res.order._id}</p>` : ""}
+      <div class="hero__cta" style="justify-content:center">
+        <a href="buyer/orders.html" class="btn btn-primary">View my orders</a>
+        <a href="marketplace.html" class="btn btn-secondary">Continue shopping</a>
+      </div>`;
+  }catch(err){
+    root.innerHTML = `<h1>We couldn't verify this payment</h1><p class="lede">${escapeHtml(err.message)}</p>
+      <a href="buyer/orders.html" class="btn btn-primary">Check my orders</a>`;
+  }
+}
+handleReturn();
+</script>
+</body>
+</html>

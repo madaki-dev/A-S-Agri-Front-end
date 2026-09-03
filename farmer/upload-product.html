@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add a product — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head">
+      <div><h1>Add a product</h1><p class="muted mb-0">List a new agricultural product for buyers to discover.</p></div>
+    </div>
+
+    <div class="split-panel" style="align-items:flex-start;grid-template-columns:1.2fr 1fr">
+      <form id="upload-form" class="card" novalidate>
+        <div class="field" id="f-productName">
+          <label for="productName">Product name</label>
+          <input id="productName" class="input" required placeholder="e.g. Premium Maize">
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="f-category">
+            <label for="category">Category</label>
+            <select id="category" class="input" required>
+              <option value="">Select category</option>
+              <option>Grains</option><option>Vegetables</option><option>Fruits</option>
+              <option>Tubers</option><option>Seeds</option><option>Fertilizers</option>
+              <option>Livestock</option><option>Farm Inputs</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field" id="f-location">
+            <label for="location">Location</label>
+            <input id="location" class="input" required placeholder="e.g. Enugu, Nigeria">
+          </div>
+        </div>
+
+        <div class="field" id="f-description">
+          <label for="description">Description</label>
+          <textarea id="description" class="input" required placeholder="Describe the quality, harvest date, and anything buyers should know."></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="f-price">
+            <label for="price">Your price (₦)</label>
+            <input id="price" type="number" min="1" class="input" required>
+            <p class="hint">A&amp;S adds a 10% marketplace commission on top — buyers see the total.</p>
+          </div>
+          <div class="field" id="f-priceUnit">
+            <label for="priceUnit">Sold per</label>
+            <select id="priceUnit" class="input">
+              <option>bag</option><option>100kg bag</option><option>50kg bag</option>
+              <option>kg</option><option>ton</option><option>crate</option>
+              <option>bunch</option><option>unit</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="f-quantity">
+            <label for="quantity">Quantity available</label>
+            <input id="quantity" type="number" min="1" class="input" required>
+          </div>
+          <div class="field">
+            <label for="delivery">Delivery available</label>
+            <select id="delivery" class="input"><option>Yes</option><option>No</option></select>
+          </div>
+        </div>
+
+        <div class="field" id="f-images">
+          <label for="images">Product images</label>
+          <input id="images" type="file" accept="image/*" multiple class="input">
+          <p class="hint">The first image is uploaded to your listing; additional images are saved for this preview on this device.</p>
+          <div class="tag-row" id="image-previews" style="margin-top:10px"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="publish-btn">Publish product</button>
+      </form>
+
+      <div class="card" style="position:sticky;top:96px">
+        <p class="muted" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px">Live preview</p>
+        <div id="preview-card"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/product-card.js"></script>
+<script>
+const user = requireAuth("../", "Farmer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "products.html", label: "My Products" },
+  { href: "orders.html", label: "Orders" },
+  { href: "messages.html", label: "Messages" },
+  { href: "upload-product.html", label: "Add Product" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "upload-product.html", "");
+
+let selectedFiles = [];
+
+function updatePreview(){
+  const name = document.getElementById("productName").value || "Your product name";
+  const category = document.getElementById("category").value || "Category";
+  const price = Number(document.getElementById("price").value) || 0;
+  const selling = price ? Math.round(price * 1.10) : 0;
+  const unit = document.getElementById("priceUnit").value;
+  const location = document.getElementById("location").value || "Location";
+  const stock = document.getElementById("quantity").value || "—";
+  const imgSrc = selectedFiles[0]?.dataUrl;
+
+  document.getElementById("preview-card").innerHTML = `
+    <div class="product-card" style="border:1px solid var(--line)">
+      <div class="product-card__media">
+        ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.4rem">${CATEGORY_ICONS[category]||"🌿"}</div>`}
+        <span class="badge product-card__category">${escapeHtml(category)}</span>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__name">${escapeHtml(name)}</div>
+        <div class="product-card__meta">📍 ${escapeHtml(location)} · ${stock} available</div>
+        <div class="product-card__price">${selling ? formatNaira(selling) : "₦0"} <span>/ ${escapeHtml(unit)}</span></div>
+      </div>
+    </div>`;
+}
+
+document.getElementById("images").addEventListener("change", async (e) => {
+  const files = Array.from(e.target.files).slice(0, 6);
+  selectedFiles = [];
+  for (const file of files){
+    const dataUrl = await Extras.fileToDataURL(file);
+    selectedFiles.push({ file, dataUrl });
+  }
+  document.getElementById("image-previews").innerHTML = selectedFiles.map(f =>
+    `<div style="width:56px;height:56px;border-radius:8px;overflow:hidden"><img src="${f.dataUrl}" style="width:100%;height:100%;object-fit:cover"></div>`
+  ).join("");
+  updatePreview();
+});
+["productName","category","price","priceUnit","location","quantity"].forEach(id =>
+  document.getElementById(id).addEventListener("input", updatePreview) || document.getElementById(id).addEventListener("change", updatePreview)
+);
+updatePreview();
+
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const productName = document.getElementById("productName").value.trim();
+  const category = document.getElementById("category").value;
+  const location = document.getElementById("location").value.trim();
+  const description = document.getElementById("description").value.trim();
+  const price = document.getElementById("price").value;
+  const quantity = document.getElementById("quantity").value;
+  const priceUnit = document.getElementById("priceUnit").value;
+
+  let ok = true;
+  const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
+  check("f-productName", !!productName);
+  check("f-category", !!category);
+  check("f-location", !!location);
+  check("f-description", !!description);
+  check("f-price", Number(price) > 0);
+  check("f-quantity", Number(quantity) > 0);
+  if (!selectedFiles.length){ toast("Add at least one product image.", "error"); ok = false; }
+  if (!ok) return;
+
+  const btn = document.getElementById("publish-btn");
+  btn.disabled = true; btn.textContent = "Publishing…";
+
+  const formData = new FormData();
+  formData.append("productName", productName);
+  formData.append("category", category);
+  formData.append("location", location);
+  formData.append("description", description);
+  formData.append("price", price);
+  formData.append("quantity", quantity);
+  formData.append("image", selectedFiles[0].file);
+
+  try{
+    const res = await API.createProduct(formData);
+    const product = res.product;
+    Extras.setProductMeta(product._id, {
+      images: selectedFiles.map(f => f.dataUrl),
+      priceUnit
+    });
+    toast("Product published.");
+    setTimeout(() => window.location.href = "products.html", 700);
+  }catch(err){
+    toast(err.message, "error");
+    btn.disabled = false; btn.textContent = "Publish product";
+  }
+});
+</script>
+</body>
+</html>

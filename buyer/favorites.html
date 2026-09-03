@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favorites — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head"><div><h1>Favorites</h1><p class="muted mb-0">Products you've saved for later.</p></div></div>
+    <div id="fav-root"><div class="skeleton" style="height:300px"></div></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/product-card.js"></script>
+<script>
+const user = requireAuth("../", "Buyer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "orders.html", label: "Orders" },
+  { href: "favorites.html", label: "Favorites" },
+  { href: "messages.html", label: "Messages" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "favorites.html", "");
+
+async function load(){
+  const root = document.getElementById("fav-root");
+  const favIds = Extras.getFavorites(user._id);
+  if (!favIds.length){
+    root.innerHTML = emptyState("No favorites yet", "Tap the heart on any product to save it here.");
+    return;
+  }
+  try{
+    const first = await API.getProducts({ page: 1 });
+    let all = [...first];
+    const totalPages = Number(first.__pagination?.totalPages) || 1;
+    const rest = await Promise.all(Array.from({length: Math.min(totalPages,8)-1}, (_,i) => API.getProducts({page: i+2})));
+    rest.forEach(r => all = all.concat(r));
+    const favorites = all.filter(p => favIds.includes(p._id));
+    renderProductGrid(root, favorites, "../");
+  }catch(err){
+    root.innerHTML = emptyState("Couldn't load your favorites", err.message);
+  }
+}
+if (user) load();
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — A&amp;S Ventures</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root-prefix="../">
+<header id="navbar"></header>
+
+<div class="dash">
+  <aside class="dash__sidebar" id="dash-sidebar"></aside>
+  <div class="dash__main">
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <div class="dash__head"><div><h1>Orders</h1><p class="muted mb-0">Orders placed for your products.</p></div></div>
+    <div id="orders-root"><div class="skeleton" style="height:300px"></div></div>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+const user = requireAuth("../", "Farmer");
+const SIDEBAR_LINKS = [
+  { href: "dashboard.html", label: "Dashboard" },
+  { href: "products.html", label: "My Products" },
+  { href: "orders.html", label: "Orders" },
+  { href: "messages.html", label: "Messages" },
+  { href: "upload-product.html", label: "Add Product" },
+  { href: "profile.html", label: "Profile & Settings" }
+];
+if (user) renderDashSidebar(SIDEBAR_LINKS, "orders.html", "");
+
+const STATUSES = ["Pending","Processing","Shipped","Delivered","Cancelled"];
+
+function orderRow(o){
+  return `<tr>
+    <td class="muted">${o.orderId.slice(-6).toUpperCase()}</td>
+    <td>${escapeHtml(o.product)}</td>
+    <td>${escapeHtml(o.buyer?.fullname || o.buyer?.fullName || "Buyer")}<br><span class="muted" style="font-size:.8rem">${escapeHtml(o.delivery?.phone||"")}</span></td>
+    <td>${o.quantity}</td>
+    <td>${formatNaira(o.farmerPrice * o.quantity)}</td>
+    <td>
+      <select class="input" data-status-for="${o.orderId}" style="padding:6px 10px">
+        ${STATUSES.map(s => `<option value="${s}" ${s===o.status?"selected":""}>${s}</option>`).join("")}
+      </select>
+    </td>
+    <td><button class="icon-btn" data-confirm-for="${o.orderId}">Payout details</button></td>
+  </tr>`;
+}
+
+function openPayoutModal(orderId){
+  openModal(`
+    <button class="modal__close" onclick="closeModal()">&times;</button>
+    <h3>Confirm payout details</h3>
+    <p class="muted">A&amp;S uses these details to send your payment for this order.</p>
+    <form id="payout-form">
+      <div class="field"><label>Your name</label><input id="p-farmerName" class="input" required value="${escapeHtml(user.fullName)}"></div>
+      <div class="field"><label>Phone</label><input id="p-farmerPhone" class="input" required value="${escapeHtml(user.phone||"")}"></div>
+      <div class="field"><label>Account number</label><input id="p-accountNumber" class="input" required></div>
+      <div class="field"><label>Bank name</label><input id="p-bankName" class="input" required></div>
+      <div class="field"><label>Account name</label><input id="p-accountName" class="input" required></div>
+      <button type="submit" class="btn btn-primary btn-block">Save details</button>
+    </form>
+  `);
+  document.getElementById("payout-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const payload = {
+      farmerName: document.getElementById("p-farmerName").value.trim(),
+      farmerPhone: document.getElementById("p-farmerPhone").value.trim(),
+      accountNumber: document.getElementById("p-accountNumber").value.trim(),
+      bankName: document.getElementById("p-bankName").value.trim(),
+      accountName: document.getElementById("p-accountName").value.trim()
+    };
+    if (Object.values(payload).some(v => !v)){ toast("Fill in every field.", "error"); return; }
+    try{
+      await API.confirmFarmerDetails(orderId, payload);
+      toast("Payout details saved.");
+      closeModal();
+    }catch(err){ toast(err.message, "error"); }
+  });
+}
+
+async function load(){
+  const root = document.getElementById("orders-root");
+  try{
+    const data = await API.getFarmerDashboard();
+    const orders = data.orders || [];
+    if (!orders.length){ root.innerHTML = emptyState("No orders yet", "Orders placed for your products will show up here."); return; }
+    root.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Order</th><th>Product</th><th>Buyer</th><th>Qty</th><th>You earn</th><th>Status</th><th>Payout</th></tr></thead>
+      <tbody>${orders.map(orderRow).join("")}</tbody>
+    </table></div>`;
+
+    root.querySelectorAll("[data-status-for]").forEach(sel => {
+      sel.addEventListener("change", async () => {
+        try{ await API.updateOrderStatus(sel.dataset.statusFor, sel.value); toast("Order status updated."); }
+        catch(err){ toast(err.message, "error"); }
+      });
+    });
+    root.querySelectorAll("[data-confirm-for]").forEach(btn => {
+      btn.addEventListener("click", () => openPayoutModal(btn.dataset.confirmFor));
+    });
+  }catch(err){
+    root.innerHTML = emptyState("Couldn't load orders", err.message);
+  }
+}
+if (user) load();
+</script>
+</body>
+</html>

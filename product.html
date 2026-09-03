@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — A&amp;S Ventures</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root-prefix="">
+<header id="navbar"></header>
+
+<main>
+  <div class="container" style="padding-top:28px">
+    <p class="breadcrumb"><a href="index.html">Home</a> / <a href="marketplace.html">Marketplace</a> / <span id="crumb-name">Product</span></p>
+  </div>
+
+  <section id="product-root" class="section--tight"></section>
+
+  <section class="section section--sand" id="more-from-seller" style="display:none">
+    <div class="container">
+      <div class="section-head"><h2>More from this seller</h2></div>
+      <div id="more-products"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<script src="js/api.js"></script>
+<script src="js/extras.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/product-card.js"></script>
+<script>
+const productId = qs("id");
+const root = document.getElementById("product-root");
+
+function starRow(avg){
+  if (avg == null) return `<span class="muted" style="font-size:.85rem">No ratings yet</span>`;
+  const full = Math.round(avg);
+  return `<span class="star-row">${Array(5).fill(0).map((_,i)=>ICONS.star).join("")}</span> <span style="font-size:.85rem;color:var(--ink-soft)">${avg} avg</span>`;
+}
+
+function renderProduct(product){
+  const meta = Extras.getProductMeta(product._id);
+  const images = (meta && meta.images && meta.images.length) ? meta.images : (product.image ? [product.image] : []);
+  const unit = meta && meta.priceUnit ? meta.priceUnit : null;
+  const farmer = product.farmer || {};
+  const verified = Extras.isVerified(farmer._id);
+  const avg = Extras.getAverageRating(farmer._id);
+  const user = getUser();
+  const isBuyer = user && user.accountType === "Buyer";
+  const isOwner = user && user._id === farmer._id;
+
+  document.getElementById("crumb-name").textContent = product.productName;
+  document.title = product.productName + " — A&S Ventures";
+
+  root.innerHTML = `
+    <div class="container">
+      <div class="split-panel" style="align-items:flex-start">
+        <div>
+          <div class="hero__image" style="aspect-ratio:1/1;margin-bottom:12px">
+            ${images.length ? `<img id="gallery-main" src="${images[0]}" alt="${escapeHtml(product.productName)}">`
+              : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;background:var(--sand)">${CATEGORY_ICONS[product.category]||"🌿"}</div>`}
+          </div>
+          ${images.length > 1 ? `<div class="tag-row" id="gallery-thumbs">
+            ${images.map((src,i)=>`<button class="icon-btn" data-src="${src}" style="padding:0;width:64px;height:64px;overflow:hidden;border-radius:8px"><img src="${src}" style="width:100%;height:100%;object-fit:cover"></button>`).join("")}
+          </div>` : ""}
+        </div>
+
+        <div>
+          <span class="badge">${CATEGORY_ICONS[product.category]||""} ${escapeHtml(product.category)}</span>
+          <h1 style="margin-top:14px">${escapeHtml(product.productName)}</h1>
+          <div class="product-card__price" style="font-size:1.6rem">${productPriceLabel(product)}</div>
+          <p class="muted" style="margin-top:-6px">${product.stock} ${unit ? unit.replace(/^per\s+/i,'') + "(s)" : "units"} available · 📍 ${escapeHtml(product.location)}</p>
+          <p>${escapeHtml(product.description)}</p>
+          <div class="tag-row" style="margin:18px 0">
+            <span class="badge badge--muted">Listed ${formatDate(product.createdAt)}</span>
+            ${verified ? `<span class="badge badge--verified">${ICONS.check} Verified seller</span>` : `<span class="badge badge--muted">Unverified seller</span>`}
+          </div>
+
+          <div class="hero__cta" style="margin-top:8px">
+            ${isOwner ? `<a href="farmer/products.html" class="btn btn-secondary">Manage this listing</a>` : `
+            <button id="contact-seller-btn" class="btn btn-secondary">Contact seller</button>
+            <button id="buy-btn" class="btn btn-primary">Add to cart</button>
+            `}
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="card">
+            <div class="flex gap-12" style="align-items:center">
+              <div class="avatar-lg">${initials(farmer.fullName)}</div>
+              <div>
+                <strong style="font-family:var(--font-display);font-size:1.05rem;color:var(--green-900)">${escapeHtml(farmer.fullName || "A&S seller")}</strong>
+                <div class="muted" style="font-size:.85rem">📍 ${escapeHtml(product.location)}</div>
+                <div style="margin-top:4px">${starRow(avg)}</div>
+              </div>
+            </div>
+            <div class="flex-between" style="margin-top:14px">
+              <span class="muted" style="font-size:.85rem" id="seller-product-count">Loading listings…</span>
+              ${verified ? `<span class="badge badge--verified">${ICONS.check} Verified</span>` : `<span class="badge badge--muted">Not yet verified</span>`}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  document.querySelectorAll("#gallery-thumbs button").forEach(btn => {
+    btn.addEventListener("click", () => document.getElementById("gallery-main").src = btn.dataset.src);
+  });
+
+  const buyBtn = document.getElementById("buy-btn");
+  if (buyBtn) buyBtn.addEventListener("click", async () => {
+    if (!user){ toast("Log in as a buyer to add products to your cart.", "error"); setTimeout(()=>location.href="login.html",900); return; }
+    if (!isBuyer){ toast("Only buyer accounts can purchase products.", "error"); return; }
+    buyBtn.disabled = true; buyBtn.textContent = "Adding…";
+    try{
+      await API.addToCart(product._id, 1);
+      toast("Added to your cart.");
+      buyBtn.textContent = "Added ✓";
+      setTimeout(() => { buyBtn.disabled = false; buyBtn.textContent = "Add to cart"; }, 1500);
+    }catch(err){
+      toast(err.message, "error");
+      buyBtn.disabled = false; buyBtn.textContent = "Add to cart";
+    }
+  });
+
+  const contactBtn = document.getElementById("contact-seller-btn");
+  if (contactBtn) contactBtn.addEventListener("click", () => {
+    if (!user){ toast("Log in to message this seller.", "error"); setTimeout(()=>location.href="login.html",900); return; }
+    if (!isBuyer){ toast("Only buyers can message sellers.", "error"); return; }
+    const conv = Extras.startOrGetConversation({
+      productId: product._id, productName: product.productName,
+      farmerId: farmer._id, farmerName: farmer.fullName,
+      buyerId: user._id, buyerName: user.fullName
+    });
+    location.href = `buyer/messages.html?conv=${conv.id}`;
+  });
+
+  // load more products from this seller
+  API.getProducts({ page: 1 }).then(all => {
+    const mine = all.filter(p => p.farmer && p.farmer._id === farmer._id && p._id !== product._id);
+    document.getElementById("seller-product-count").textContent = `${all.filter(p=>p.farmer && p.farmer._id===farmer._id).length} product(s) listed`;
+    if (mine.length){
+      document.getElementById("more-from-seller").style.display = "block";
+      renderProductGrid(document.getElementById("more-products"), mine.slice(0,4));
+    }
+  }).catch(() => {});
+}
+
+(async function init(){
+  if (!productId){
+    root.innerHTML = `<div class="container">${emptyState("Product not found", "This product link is missing an id.")}</div>`;
+    return;
+  }
+  root.innerHTML = `<div class="container"><div class="skeleton" style="height:420px"></div></div>`;
+  try{
+    const product = await API.getProduct(productId);
+    renderProduct(product);
+  }catch(err){
+    root.innerHTML = `<div class="container">${emptyState("Product not found", err.message)}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
