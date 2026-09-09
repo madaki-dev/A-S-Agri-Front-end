@@ -98,49 +98,54 @@
 
 
         mount.innerHTML = `
-      <div class="table-wrap">
+          <div class="table-wrap">
 
-        <table>
+            <table>
 
-          <thead>
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Buyer</th>
+                  <th>Phone</th>
+                  <th>WhatsApp</th>
+                  <th>Products</th>
+                  <th>Location</th>
+                  <th>Total paid</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
 
-            <tr>
-              <th>Order</th>
-              <th>Buyer</th>
-              <th>Phone</th>
-              <th>WhatsApp</th>
-              <th>Products</th>
-              <th>Location</th>
-              <th>Total paid</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
+              <tbody>
 
-          </thead>
-
-          <tbody>
-
-            ${orders.map(o => {
+                ${orders.map(o => {
 
           const orderId =
             o._id
-              ? o._id.slice(-6).toUpperCase()
+              ? String(o._id).slice(-6).toUpperCase()
               : "N/A";
 
+
+          /* ==============================
+             BUYER DETAILS
+             ============================== */
 
           const buyerName =
             o.delivery?.fullname ||
             o.buyer?.fullName ||
             "—";
 
+
           const phone =
             o.delivery?.phone ||
             o.buyer?.phone ||
             "—";
 
+
           const whatsapp =
             o.delivery?.whatsapp ||
             "—";
+
 
           const location = [
             o.delivery?.address,
@@ -150,70 +155,101 @@
             .join(", ") || "—";
 
 
+          /* ==============================
+             PRODUCTS
+             ============================== */
+
+          const productNames =
+            (o.products || [])
+              .map(item => {
+
+                const name =
+                  item.product?.productName ||
+                  "Unknown product";
+
+                const quantity =
+                  item.quantity || 0;
+
+                return `
+                          ${escapeHtml(name)}
+                          × ${escapeHtml(quantity)}
+                        `;
+              })
+              .join("<br>") || "—";
+
+
+          /* ==============================
+             TOTAL
+             ============================== */
+
           const totalPaid =
             Number(o.totalAmount || 0);
 
 
+          /* ==============================
+             ROW
+             ============================== */
+
           return `
 
-                <tr>
+                    <tr>
 
-                  <td class="muted">
-                    ${escapeHtml(orderId)}
-                  </td>
-
-
-                  <td>
-                    ${escapeHtml(buyerName)}
-                  </td>
+                      <td class="muted">
+                        ${escapeHtml(orderId)}
+                      </td>
 
 
-                  <td>
-                    ${escapeHtml(phone)}
-                  </td>
+                      <td>
+                        ${escapeHtml(buyerName)}
+                      </td>
 
 
-                  <td>
-                    ${escapeHtml(whatsapp)}
-                  </td>
+                      <td>
+                        ${escapeHtml(phone)}
+                      </td>
 
 
-                  <td>
-                    ${escapeHtml(productNames)}
-                  </td>
+                      <td>
+                        ${escapeHtml(whatsapp)}
+                      </td>
 
 
-                  <td>
-                    ${escapeHtml(location)}
-                  </td>
+                      <td>
+                        ${productNames}
+                      </td>
 
 
-                  <td>
-                    ${formatNaira(totalPaid)}
-                  </td>
+                      <td>
+                        ${escapeHtml(location)}
+                      </td>
 
 
-                  <td>
-                    ${statusBadge(o.status)}
-                  </td>
+                      <td>
+                        ${formatNaira(totalPaid)}
+                      </td>
 
 
-                  <td>
-                    ${formatDate(o.createdAt)}
-                  </td>
+                      <td>
+                        ${statusBadge(o.status)}
+                      </td>
 
-                </tr>
 
-              `;
+                      <td>
+                        ${formatDate(o.createdAt)}
+                      </td>
+
+                    </tr>
+
+                  `;
 
         }).join("")}
 
-          </tbody>
+              </tbody>
 
-        </table>
+            </table>
 
-      </div>
-    `;
+          </div>
+        `;
 
 
       } catch (err) {
