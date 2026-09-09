@@ -59,6 +59,7 @@ body {
   background-attachment: fixed;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  animation: pageEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Soft, feathered agricultural atmosphere behind the existing components. */
@@ -1703,5 +1704,27 @@ td {
 
   .card {
     padding: 18px;
+  }
+}
+
+/* ============================================================
+   A&S VENTURES — PREMIUM PAGE TRANSITION
+   ============================================================ */
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
   }
 }

@@ -12,7 +12,7 @@
 <div class="dash">
   <aside class="dash__sidebar" id="dash-sidebar"></aside>
   <div class="dash__main">
-    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()">☰ Menu</button>
+    <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()"><span style="display:inline-flex;vertical-align:-3px;margin-right:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>Menu</button>
     <div class="dash__head">
       <div><h1>Add a product</h1><p class="muted mb-0">List a new agricultural product for buyers to discover.</p></div>
     </div>
@@ -123,12 +123,12 @@ function updatePreview(){
   document.getElementById("preview-card").innerHTML = `
     <div class="product-card" style="border:1px solid var(--line)">
       <div class="product-card__media">
-        ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.4rem">${CATEGORY_ICONS[category]||"🌿"}</div>`}
+        ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.4rem;color:var(--green-700)">${CATEGORY_ICONS[category]||ICONS.leaf}</div>`}
         <span class="badge product-card__category">${escapeHtml(category)}</span>
       </div>
       <div class="product-card__body">
         <div class="product-card__name">${escapeHtml(name)}</div>
-        <div class="product-card__meta">📍 ${escapeHtml(location)} · ${stock} available</div>
+        <div class="product-card__meta"><span style="display:inline-flex;font-size:13px">${ICONS.pin}</span> ${escapeHtml(location)} · ${stock} available</div>
         <div class="product-card__price">${selling ? formatNaira(selling) : "₦0"} <span>/ ${escapeHtml(unit)}</span></div>
       </div>
     </div>`;

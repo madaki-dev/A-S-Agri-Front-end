@@ -12,29 +12,56 @@ const ICONS = {
   search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`,
   empty: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>`,
   star: `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8L5.7 21l1.7-7L2 9.2l7.1-.6z"/></svg>`,
-  check: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`
+  check: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
+  checkCircle: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>`,
+  pin: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4h3.6l1.4 4.2-2.1 1.5a12.5 12.5 0 0 0 6.9 6.9l1.5-2.1L20 15.9v3.6c0 .8-.7 1.4-1.5 1.3C9.4 19.9 4.1 14.6 3.2 5.5 3.1 4.7 3.7 4 4.5 4z"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 6.5l8 6 8-6"/></svg>`,
+  message: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5z"/></svg>`,
+  leaf: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C10 4 4 10 4 18v2h2c8 0 14-6 14-16z"/><path d="M8 20C10 14 14 10 20 6"/></svg>`,
+  wheat: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V5"/><path d="M12 6l-3-2M12 6l3-2M12 9l-3-2M12 9l3-2M12 12l-3-2M12 12l3-2M12 15l-3-2M12 15l3-2"/></svg>`,
+  sprout: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13C12 9 9 7 5 7c0 4 3 6 7 6z"/><path d="M12 11c0-4 3-6 7-6 0 4-3 6-7 6z"/></svg>`,
+  fruit: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9c-4 0-7 3-7 6.5S8 21 12 21s7-2 7-5.5S16 9 12 9z"/><path d="M12 9c0-2.5 1-4 3-5"/></svg>`,
+  tuber: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13c-1-3 1-6 4-6.5 1.5-2 4.5-2.3 6-.5 3 .5 5 3.5 4 6.5-1 3-4 5-8 5s-5-1.5-6-4.5z"/></svg>`,
+  flask: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg>`,
+  paw: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="9" r="1.6"/><circle cx="12" cy="6.5" r="1.6"/><circle cx="17" cy="9" r="1.6"/><path d="M7 14c0-2 2-3 5-3s5 1 5 3-2 5-5 5-5-3-5-5z"/></svg>`,
+  tractor: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="18" r="2.6"/><circle cx="18" cy="18" r="3.4"/><path d="M4 18h1M9 6h4l3 5h1.5a2 2 0 0 1 2 2v2M13 6v6H7l-2 3M9 6V4"/></svg>`,
+  globe: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3z"/></svg>`,
+  users: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M14.5 14.2C17 14.6 19.5 16.5 19.5 20"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  trendingUp: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>`,
+  box: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></svg>`,
+  compass: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-6 2 2-6 6-2z"/></svg>`,
+  barChart: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>`,
+  graduationCap: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-4 10 4-10 4-10-4z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>`,
+  facebook: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M22 12.06A10 10 0 1 0 10.4 22V14.9H7.9v-2.84h2.5v-2.17c0-2.47 1.47-3.84 3.72-3.84 1.08 0 2.21.19 2.21.19v2.43h-1.24c-1.23 0-1.61.76-1.61 1.55v1.84h2.75l-.44 2.84h-2.31V22A10 10 0 0 0 22 12.06z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.6" r="1"/></svg>`,
+  tiktok: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M16.3 3c.35 1.9 1.6 3.4 3.6 3.75v2.8c-1.3 0-2.6-.4-3.6-1.15v6.4a5.6 5.6 0 1 1-5.6-5.6c.28 0 .55.02.82.06v2.85a2.75 2.75 0 1 0 1.98 2.65V3h2.8z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>`,
+  whatsapp: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.26A9.5 9.5 0 1 0 12 2.5zm5.4 13.6c-.23.65-1.32 1.24-1.9 1.32-.5.08-1.05.11-1.7-.1-.4-.13-.9-.3-1.56-.58-2.75-1.19-4.55-3.99-4.68-4.18-.14-.18-1.1-1.47-1.1-2.8 0-1.34.7-1.99.95-2.26.24-.28.53-.34.7-.34h.51c.16 0 .38-.03.6.45.23.51.77 1.77.83 1.9.07.13.11.28.02.45-.09.18-.14.28-.27.43-.14.16-.28.35-.4.47-.13.13-.27.28-.12.55.16.28.7 1.19 1.53 1.94 1.05.95 1.95 1.24 2.22 1.38.28.14.44.12.6-.06.17-.19.72-.85.91-1.14.19-.28.38-.24.63-.14.26.09 1.65.79 1.93.93.28.14.47.21.54.32.07.13.07.72-.16 1.38z"/></svg>`
 };
 
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function escapeHtml(str) {
+  return String(str ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-function formatNaira(n){
+function formatNaira(n) {
   const num = Number(n) || 0;
   return "₦" + num.toLocaleString("en-NG", { maximumFractionDigits: 0 });
 }
-function formatDate(d){
-  return new Date(d).toLocaleDateString("en-NG", { day:"numeric", month:"short", year:"numeric" });
+function formatDate(d) {
+  return new Date(d).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" });
 }
-function initials(name){
+function initials(name) {
   if (!name) return "A";
-  return name.trim().split(/\s+/).slice(0,2).map(w => w[0].toUpperCase()).join("");
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 }
-function qs(name){ return new URLSearchParams(window.location.search).get(name); }
+function qs(name) { return new URLSearchParams(window.location.search).get(name); }
 
 // ---------------- Toasts ----------------
-function toast(message, type = "success"){
+function toast(message, type = "success") {
   let root = document.getElementById("toast-root");
-  if (!root){
+  if (!root) {
     root = document.createElement("div");
     root.id = "toast-root";
     document.body.appendChild(root);
@@ -47,7 +74,7 @@ function toast(message, type = "success"){
 }
 
 // ---------------- Modal ----------------
-function openModal(innerHtml){
+function openModal(innerHtml) {
   closeModal();
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
@@ -57,7 +84,7 @@ function openModal(innerHtml){
   document.body.appendChild(overlay);
   return overlay;
 }
-function closeModal(){
+function closeModal() {
   const existing = document.getElementById("active-modal");
   if (existing) existing.remove();
 }
@@ -71,11 +98,11 @@ const NAV_LINKS = [
   { href: "contact.html", label: "Contact" }
 ];
 
-function currentPage(){
+function currentPage() {
   return window.location.pathname.split("/").pop() || "index.html";
 }
 
-function dashboardHref(){
+function dashboardHref() {
   const user = getUser();
   if (!user) return "login.html";
   if (user.role === "Admin") return "admin/dashboard.html";
@@ -83,7 +110,7 @@ function dashboardHref(){
   return "buyer/dashboard.html";
 }
 
-function renderNavbar(rootPrefix = ""){
+function renderNavbar(rootPrefix = "") {
   const mount = document.getElementById("navbar");
   if (!mount) return;
   const user = getUser();
@@ -96,7 +123,7 @@ function renderNavbar(rootPrefix = ""){
   }).join("");
 
   let actionsHtml;
-  if (user){
+  if (user) {
     actionsHtml = `
       <div class="navbar__actions">
         ${user.accountType === "Buyer" ? `
@@ -135,22 +162,22 @@ function renderNavbar(rootPrefix = ""){
     </div>`;
 
   const menuBtn = document.getElementById("nav-menu-btn");
-  if (menuBtn){
+  if (menuBtn) {
     menuBtn.addEventListener("click", () => renderMobileMenu(rootPrefix));
   }
   const avatarBtn = document.getElementById("nav-avatar-btn");
-  if (avatarBtn){
+  if (avatarBtn) {
     avatarBtn.addEventListener("click", () => {
       document.getElementById("nav-dropdown").classList.toggle("open");
     });
     document.addEventListener("click", (e) => {
-      if (!avatarBtn.contains(e.target) && !document.getElementById("nav-dropdown").contains(e.target)){
+      if (!avatarBtn.contains(e.target) && !document.getElementById("nav-dropdown").contains(e.target)) {
         document.getElementById("nav-dropdown")?.classList.remove("open");
       }
     });
   }
   const logoutBtn = document.getElementById("nav-logout-btn");
-  if (logoutBtn){
+  if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       clearSession();
       toast("You've been logged out.");
@@ -158,20 +185,20 @@ function renderNavbar(rootPrefix = ""){
     });
   }
 
-  if (user && user.accountType === "Buyer"){
+  if (user && user.accountType === "Buyer") {
     API.getCart().then(cart => {
       const badge = document.getElementById("nav-cart-badge");
       if (!badge) return;
-      const count = cart.reduce((s,i) => s + i.quantity, 0);
-      if (count > 0){ badge.style.display = "flex"; badge.textContent = count; }
-    }).catch(() => {});
+      const count = cart.reduce((s, i) => s + i.quantity, 0);
+      if (count > 0) { badge.style.display = "flex"; badge.textContent = count; }
+    }).catch(() => { });
   }
 }
 
-function renderMobileMenu(rootPrefix = ""){
+function renderMobileMenu(rootPrefix = "") {
   const user = getUser();
   const existing = document.getElementById("mobile-menu-el");
-  if (existing){ existing.remove(); return; }
+  if (existing) { existing.remove(); return; }
 
   const el = document.createElement("div");
   el.className = "mobile-menu open";
@@ -198,7 +225,7 @@ function renderMobileMenu(rootPrefix = ""){
   if (logout) logout.addEventListener("click", () => { clearSession(); window.location.href = rootPrefix + "index.html"; });
 }
 
-function renderFooter(rootPrefix = ""){
+function renderFooter(rootPrefix = "") {
   const mount = document.getElementById("footer");
   if (!mount) return;
   mount.innerHTML = `
@@ -243,37 +270,37 @@ function renderFooter(rootPrefix = ""){
       <div class="footer__bottom">
         <small>© 2026 A&amp;S Ventures. All rights reserved.</small>
         <div class="footer__social">
-          <a href="#" aria-label="Facebook">f</a>
-          <a href="#" aria-label="Instagram">ig</a>
-          <a href="#" aria-label="TikTok">tt</a>
-          <a href="#" aria-label="X">x</a>
-          <a href="#" aria-label="WhatsApp">wa</a>
+          <a href="#" aria-label="Facebook" style="font-size:15px">${ICONS.facebook}</a>
+          <a href="https://www.instagram.com/as_venturesofficial?utm_source=qr" aria-label="Instagram" style="font-size:15px">${ICONS.instagram}</a>
+          <a href="https://www.tiktok.com/@as_venturesofficial?_r=1&_t=ZS-98liMpWv9Ae" aria-label="TikTok" style="font-size:15px">${ICONS.tiktok}</a>
+          <a href="https://x.com/asventures_?s=21" aria-label="X" style="font-size:14px">${ICONS.x}</a>
+          <a href="https://wa.me/2348023799337" aria-label="WhatsApp" style="font-size:15px">${ICONS.whatsapp}</a>
         </div>
       </div>
     </div>`;
 }
 
-function emptyState(title, body, iconKey = "empty"){
+function emptyState(title, body, iconKey = "empty") {
   return `<div class="empty-state">${ICONS[iconKey]}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p></div>`;
 }
 
-function skeletonGrid(count = 8){
+function skeletonGrid(count = 8) {
   return `<div class="product-grid">${Array(count).fill('<div class="skeleton skeleton-card"></div>').join("")}</div>`;
 }
 
 // ---------------- Auth guard ----------------
-function requireAuth(rootPrefix = "", accountType = null){
-  if (!isLoggedIn()){
+function requireAuth(rootPrefix = "", accountType = null) {
+  if (!isLoggedIn()) {
     window.location.href = rootPrefix + "login.html?next=" + encodeURIComponent(window.location.pathname);
     return null;
   }
   const user = getUser();
-  if (accountType && user.accountType !== accountType && user.role !== "Admin"){
+  if (accountType && user.accountType !== accountType && user.role !== "Admin") {
     toast("You don't have access to that page.", "error");
     window.location.href = rootPrefix + "index.html";
     return null;
   }
-  if (accountType === "Admin" && user.role !== "Admin"){
+  if (accountType === "Admin" && user.role !== "Admin") {
     toast("Admins only.", "error");
     window.location.href = rootPrefix + "index.html";
     return null;
@@ -282,7 +309,7 @@ function requireAuth(rootPrefix = "", accountType = null){
 }
 
 // ---------------- Dashboard sidebar ----------------
-function renderDashSidebar(links, activeHref, rootPrefix = ""){
+function renderDashSidebar(links, activeHref, rootPrefix = "") {
   const mount = document.getElementById("dash-sidebar");
   if (!mount) return;
   const user = getUser();
@@ -302,7 +329,7 @@ function renderDashSidebar(links, activeHref, rootPrefix = ""){
     </div>
     ${itemsHtml}
     <div class="divider" style="opacity:.3"></div>
-    <button id="dash-logout-btn">↩ Log out</button>
+    <button id="dash-logout-btn"><span style="display:inline-flex;vertical-align:-3px;margin-right:6px;font-size:15px">${ICONS.logout}</span>Log out</button>
   `;
   document.getElementById("dash-logout-btn").addEventListener("click", () => {
     clearSession();
@@ -311,7 +338,7 @@ function renderDashSidebar(links, activeHref, rootPrefix = ""){
   const closeBtn = document.getElementById("dash-sidebar-close");
   if (closeBtn) closeBtn.addEventListener("click", () => mount.classList.remove("open"));
 }
-function toggleDashSidebar(){
+function toggleDashSidebar() {
   document.getElementById("dash-sidebar")?.classList.toggle("open");
 }
 

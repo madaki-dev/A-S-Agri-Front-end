@@ -3,8 +3,8 @@
    ============================================================ */
 
 const CATEGORY_ICONS = {
-  Grains: "🌾", Vegetables: "🥬", Fruits: "🍌", Tubers: "🍠",
-  Seeds: "🌱", Fertilizers: "🧪", Livestock: "🐐", "Farm Inputs": "🚜", Other: "🌿"
+  Grains: ICONS.wheat, Vegetables: ICONS.sprout, Fruits: ICONS.fruit, Tubers: ICONS.tuber,
+  Seeds: ICONS.sprout, Fertilizers: ICONS.flask, Livestock: ICONS.paw, "Farm Inputs": ICONS.tractor, Other: ICONS.leaf
 };
 
 function productImageSrc(product){
@@ -32,8 +32,8 @@ function productCardHtml(product, rootPrefix = ""){
   return `
   <article class="product-card" data-id="${product._id}">
     <div class="product-card__media">
-      ${img ? `<img src="${img}" alt="${escapeHtml(product.productName)}" loading="lazy">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.4rem">${CATEGORY_ICONS[product.category] || "🌿"}</div>`}
-      <span class="badge product-card__category">${CATEGORY_ICONS[product.category] || ""} ${escapeHtml(product.category)}</span>
+      ${img ? `<img src="${img}" alt="${escapeHtml(product.productName)}" loading="lazy">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.4rem;color:var(--green-700)">${CATEGORY_ICONS[product.category] || ICONS.leaf}</div>`}
+      <span class="badge product-card__category"><span style="display:inline-flex;font-size:13px">${CATEGORY_ICONS[product.category] || ""}</span> ${escapeHtml(product.category)}</span>
       ${isBuyer ? `
       <button class="product-card__fav ${fav ? "active" : ""}" data-fav-id="${product._id}" aria-label="Save product">
         ${ICONS.heart}
@@ -44,7 +44,7 @@ function productCardHtml(product, rootPrefix = ""){
       <div class="product-card__meta">
         <span>${escapeHtml(farmerName)}</span>${verified ? `<span class="badge badge--verified">${ICONS.check} Verified</span>` : ""}
       </div>
-      <div class="product-card__meta">📍 ${escapeHtml(product.location)} · ${product.stock} available</div>
+      <div class="product-card__meta"><span style="display:inline-flex;font-size:13px">${ICONS.pin}</span> ${escapeHtml(product.location)} · ${product.stock} available</div>
       <div class="product-card__price">${productPriceLabel(product)}</div>
     </div>
     <div class="product-card__footer">

@@ -51,11 +51,10 @@ body {
   position: relative;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 58% 28% at 50% 12%, rgba(198, 134, 43, .10) 0%, rgba(198, 134, 43, .045) 42%, transparent 76%),
-    radial-gradient(ellipse 72% 42% at 8% 48%, rgba(44, 150, 96, .13) 0%, rgba(44, 150, 96, .055) 42%, transparent 76%),
-    radial-gradient(ellipse 72% 42% at 92% 54%, rgba(31, 122, 77, .15) 0%, rgba(31, 122, 77, .06) 44%, transparent 78%),
-    radial-gradient(ellipse 95% 52% at 50% 100%, rgba(31, 122, 77, .28) 0%, rgba(44, 150, 96, .13) 38%, transparent 76%),
-    linear-gradient(180deg, #FFFEFA 0%, #FBFAF5 38%, #F4F7EF 68%, #E9F1E7 100%);
+    radial-gradient(ellipse 80% 45% at 50% 92%, rgba(31, 122, 77, .24) 0%, rgba(31, 122, 77, .12) 38%, transparent 72%),
+    radial-gradient(ellipse 55% 35% at 10% 35%, rgba(44, 150, 96, .10) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 38% at 92% 48%, rgba(44, 150, 96, .12) 0%, transparent 72%),
+    linear-gradient(180deg, #FBFAF5 0%, #F8F9F4 42%, #EEF5EC 100%);
   background-attachment: fixed;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -69,11 +68,10 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 12% 48%, rgba(44, 150, 96, .16), transparent 30%),
-    radial-gradient(ellipse at 88% 52%, rgba(31, 122, 77, .18), transparent 34%),
-    radial-gradient(ellipse at 50% 100%, rgba(31, 122, 77, .24), transparent 48%),
-    radial-gradient(ellipse at 50% 8%, rgba(198, 134, 43, .07), transparent 30%);
-  filter: blur(30px);
+    radial-gradient(ellipse at 18% 78%, rgba(44, 150, 96, .10), transparent 28%),
+    radial-gradient(ellipse at 82% 72%, rgba(31, 122, 77, .12), transparent 32%),
+    radial-gradient(ellipse at 50% 100%, rgba(31, 122, 77, .16), transparent 45%);
+  filter: blur(24px);
   opacity: .95;
 }
 
@@ -764,13 +762,13 @@ p {
 }
 
 .badge--status-processing {
-  background: #E8F0E5;
-  color: var(--green-700);
+  background: #E6EEFB;
+  color: #2A5AA0;
 }
 
 .badge--status-shipped {
-  background: #F7EAD2;
-  color: #8A5C1D;
+  background: #E8E4FA;
+  color: #5B3FA3;
 }
 
 .badge--status-delivered {
@@ -1645,7 +1643,6 @@ td {
 
 /* ---------- Contact page mobile safeguards ---------- */
 @media (max-width: 760px) {
-
   .contact-grid,
   .contact-layout,
   .contact-content {
@@ -1653,9 +1650,9 @@ td {
     gap: 24px !important;
   }
 
-  .contact-grid>*,
-  .contact-layout>*,
-  .contact-content>* {
+  .contact-grid > *,
+  .contact-layout > *,
+  .contact-content > * {
     min-width: 0;
   }
 
