@@ -59,7 +59,7 @@ body {
   background-attachment: fixed;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  animation: pageEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pageEnter 0.65s ease;
 }
 
 /* Soft, feathered agricultural atmosphere behind the existing components. */

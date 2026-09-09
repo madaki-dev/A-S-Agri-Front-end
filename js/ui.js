@@ -137,8 +137,6 @@ function renderNavbar(rootPrefix = "") {
             <div style="padding:10px 12px 6px;font-size:.8rem;color:var(--ink-soft)">Signed in as<br><strong style="color:var(--ink)">${escapeHtml(user.fullName)}</strong></div>
             <a href="${rootPrefix}${dashboardHref()}">Dashboard</a>
             ${user.accountType === "Farmer" ? `<a href="${rootPrefix}farmer/upload-product.html">Upload product</a>` : ""}
-            ${user.accountType === "Buyer" ? `<a href="${rootPrefix}buyer/messages.html">Messages</a>` : ""}
-            ${user.accountType === "Farmer" ? `<a href="${rootPrefix}farmer/messages.html">Messages</a>` : ""}
             <button id="nav-logout-btn">Log out</button>
           </div>
         </div>
@@ -270,7 +268,7 @@ function renderFooter(rootPrefix = "") {
       <div class="footer__bottom">
         <small>© 2026 A&amp;S Ventures. All rights reserved.</small>
         <div class="footer__social">
-          <a href="#" aria-label="Facebook" style="font-size:15px">${ICONS.facebook}</a>
+          <a href="https://www.facebook.com/share/18DQmC7gsq/?mibextid=wwXIfr" aria-label="Facebook" style="font-size:15px">${ICONS.facebook}</a>
           <a href="https://www.instagram.com/as_venturesofficial?utm_source=qr" aria-label="Instagram" style="font-size:15px">${ICONS.instagram}</a>
           <a href="https://www.tiktok.com/@as_venturesofficial?_r=1&_t=ZS-98liMpWv9Ae" aria-label="TikTok" style="font-size:15px">${ICONS.tiktok}</a>
           <a href="https://x.com/asventures_?s=21" aria-label="X" style="font-size:14px">${ICONS.x}</a>
