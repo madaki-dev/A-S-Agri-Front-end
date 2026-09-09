@@ -59,7 +59,7 @@ body {
   background-attachment: fixed;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  animation: pageEnter 0.65s ease;
+  animation: toast-in 0.65s ease-out;
 }
 
 /* Soft, feathered agricultural atmosphere behind the existing components. */
@@ -1707,24 +1707,32 @@ td {
   }
 }
 
-/* ============================================================
-   A&S VENTURES — PREMIUM PAGE TRANSITION
-   ============================================================ */
-
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Dashboard logout button */
+#dash-logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  margin-top: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: transparent;
+  color: #d9e2d9;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  body {
-    animation: none;
-  }
+#dash-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+#dash-logout-btn:active {
+  transform: translateY(1px);
 }
