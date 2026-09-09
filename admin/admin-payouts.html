@@ -613,27 +613,6 @@
            AUTHENTICATION
            ========================================================= */
 
-        async function checkAdminAccess() {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                window.location.href = "../login.html";
-                return false;
-            }
-
-            /*
-             * Do not make a second /api/profile request here.
-             *
-             * The admin payouts endpoint is already protected by:
-             * protect middleware + adminOnly middleware.
-             *
-             * This prevents the page from redirecting to login simply
-             * because the profile request fails or Render is temporarily
-             * unavailable.
-             */
-            return true;
-        }
-
 
         /* =========================================================
            LOAD PAYOUTS
