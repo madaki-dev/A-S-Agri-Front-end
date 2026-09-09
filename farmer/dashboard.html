@@ -14,7 +14,11 @@
   <div class="dash">
     <aside class="dash__sidebar" id="dash-sidebar"></aside>
     <div class="dash__main">
-      <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()"><span style="display:inline-flex;vertical-align:-3px;margin-right:6px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>Menu</button>
+      <button class="btn btn-ghost btn-sm mobile-dash-toggle" onclick="toggleDashSidebar()"><span
+          style="display:inline-flex;vertical-align:-3px;margin-right:6px"><svg viewBox="0 0 24 24" width="16"
+            height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg></span>Menu</button>
       <div class="dash__head">
         <div>
           <h1 id="welcome-heading">Welcome back</h1>
@@ -94,11 +98,28 @@
         const data = await API.getFarmerDashboard();
         const activeListings = (data.products || []).filter(p => p.stock > 0).length;
         document.getElementById("stat-cards").innerHTML = `
-      <div class="stat-card"><div class="stat-card__label">Total products</div><div class="stat-card__value">${data.productsUploaded}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Active listings</div><div class="stat-card__value">${activeListings}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Orders received</div><div class="stat-card__value">${data.ordersReceived}</div></div>
-      <div class="stat-card"><div class="stat-card__label">Revenue</div><div class="stat-card__value">${formatNaira(data.revenue)}</div></div>`;
-        document.getElementById("orders-table").innerHTML = ordersTableHtml(data.orders || []);
+  <div class="stat-card">
+    <div class="stat-card__label">Total products</div>
+    <div class="stat-card__value">${data.totalProducts || 0}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card__label">Active listings</div>
+    <div class="stat-card__value">${activeListings}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card__label">Orders received</div>
+    <div class="stat-card__value">${data.totalOrders || 0}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card__label">Revenue</div>
+    <div class="stat-card__value">${formatNaira(data.revenue || 0)}</div>
+  </div>`;
+
+        document.getElementById("orders-table").innerHTML =
+          ordersTableHtml(data.sales || []);
       } catch (err) {
         toast(err.message, "error");
       }
