@@ -111,6 +111,14 @@ const API = {
   // ---- Admin ----
   getAdminDashboard: () => apiRequest("/admin/dashboard"),
   getAdminOrders: () => apiRequest("/admin/orders"),
+  getAdminPayouts: () => apiRequest("/admin/payouts"),
+  markPayoutPaid: (orderId, payoutId) =>
+    apiRequest(
+      `/admin/payouts/${orderId}/${payoutId}/paid`,
+      {
+        method: "PATCH"
+      }
+    ),
 
   // ---- Profile ----
   getProfile: () => apiRequest("/profile"),
@@ -119,3 +127,4 @@ const API = {
   // ---- Contact ----
   sendContact: (payload) => apiRequest("/contact", { method: "POST", body: payload })
 };
+

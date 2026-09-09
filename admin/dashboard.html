@@ -129,41 +129,25 @@
 
 
           const buyerName =
-            o.buyer?.fullName ||
             o.delivery?.fullname ||
-            "Buyer";
-
+            o.buyer?.fullName ||
+            "—";
 
           const phone =
-            o.buyer?.phone ||
             o.delivery?.phone ||
-            "";
-
+            o.buyer?.phone ||
+            "—";
 
           const whatsapp =
-            o.buyer?.whatsapp ||
             o.delivery?.whatsapp ||
-            "";
+            "—";
 
-
-          const productNames =
-            (o.products || [])
-              .map(item =>
-                item.product?.productName ||
-                "Product"
-              )
-              .join(", ");
-
-
-          const locationParts = [
+          const location = [
             o.delivery?.address,
             o.delivery?.state
-          ].filter(Boolean);
-
-
-          const location =
-            locationParts.join(", ") ||
-            "Not provided";
+          ]
+            .filter(Boolean)
+            .join(", ") || "—";
 
 
           const totalPaid =
@@ -185,12 +169,12 @@
 
 
                   <td>
-                    ${escapeHtml(phone || "—")}
+                    ${escapeHtml(phone)}
                   </td>
 
 
                   <td>
-                    ${escapeHtml(whatsapp || "—")}
+                    ${escapeHtml(whatsapp)}
                   </td>
 
 
