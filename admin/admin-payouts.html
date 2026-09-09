@@ -1,648 +1,402 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Payouts — A&S Ventures</title>
+    <title>A&S Ventures — Admin Payouts</title>
 
-    <!-- Your main dashboard stylesheet -->
     <link rel="stylesheet" href="../css/style.css">
 
     <style>
-        /* =========================================================
-           A&S ADMIN PAYOUTS
-        ========================================================= */
+        /* ============================================================
+       ADMIN PAYOUTS — PAGE-SPECIFIC FUNCTIONAL STYLES
+       Existing A&S design system remains unchanged.
+       ============================================================ */
 
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background:
-                radial-gradient(circle at 20% 10%, rgba(70, 255, 120, 0.08), transparent 35%),
-                linear-gradient(135deg, #061b0a, #0d3214);
-            color: #ffffff;
-            min-height: 100vh;
-        }
-
-        .payout-page {
-            width: min(1500px, calc(100% - 40px));
-            margin: 0 auto;
-            padding: 40px 0 70px;
-        }
-
-        .page-header {
-            margin-bottom: 30px;
-        }
-
-        .page-header h1 {
-            margin: 0 0 8px;
-            font-size: clamp(28px, 4vw, 42px);
-            letter-spacing: -1px;
-        }
-
-        .page-header p {
-            margin: 0;
-            color: rgba(235, 255, 238, 0.7);
-            font-size: 15px;
-        }
-
-        /* =========================================================
-           SUMMARY CARDS
-        ========================================================= */
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .summary-card {
-            padding: 24px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-
-        .summary-label {
-            font-size: 13px;
-            color: rgba(235, 255, 238, 0.65);
-            margin-bottom: 10px;
-        }
-
-        .summary-value {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        /* =========================================================
-           TOOLBAR
-        ========================================================= */
-
-        .toolbar {
+        .payout-toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 18px;
+            gap: 16px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
         }
 
-        .search-box {
-            flex: 1;
-            min-width: 240px;
+        .payout-toolbar .search-bar {
+            max-width: 420px;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.07);
-            color: #ffffff;
-            outline: none;
-            font-size: 14px;
+        .payout-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
         }
 
-        .search-box input:focus {
-            border-color: rgba(120, 255, 140, 0.5);
+        .payout-summary-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-m);
+            padding: 20px;
         }
 
-        .search-box input::placeholder {
-            color: rgba(255, 255, 255, 0.45);
+        .payout-summary-card__label {
+            font-size: .8rem;
+            color: var(--ink-soft);
+            margin-bottom: 6px;
         }
 
-        .filter-box select {
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: #0c2812;
-            color: #ffffff;
-            outline: none;
-            min-width: 150px;
+        .payout-summary-card__value {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--green-900);
+            font-weight: 600;
         }
 
-        /* =========================================================
-           TABLE
-        ========================================================= */
-
-        .table-card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-        }
-
-        .table-scroll {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1050px;
-        }
-
-        th {
-            text-align: left;
-            padding: 17px 16px;
-            background: rgba(0, 0, 0, 0.22);
-            color: rgba(235, 255, 238, 0.72);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 18px 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
-            vertical-align: middle;
-            font-size: 14px;
-        }
-
-        tbody tr {
-            transition: background 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.035);
-        }
-
-        .farmer-name {
-            font-weight: 700;
-        }
-
-        .farmer-contact {
-            margin-top: 4px;
-            color: rgba(235, 255, 238, 0.55);
-            font-size: 12px;
-        }
-
-        .amount {
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .bank-details {
-            line-height: 1.55;
-        }
-
-        .bank-name {
-            font-weight: 700;
-        }
-
-        .account-number {
-            font-size: 13px;
-            color: rgba(235, 255, 238, 0.7);
-        }
-
-        .account-name {
-            font-size: 12px;
-            color: rgba(235, 255, 238, 0.5);
-        }
-
-        /* =========================================================
-           STATUS
-        ========================================================= */
-
-        .status {
+        .payout-status {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: 7px 11px;
+            padding: 5px 10px;
             border-radius: 999px;
-            font-size: 12px;
+            font-size: .72rem;
             font-weight: 700;
-            white-space: nowrap;
         }
 
-        .status::before {
-            content: "";
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: currentColor;
+        .payout-status.pending {
+            background: var(--gold-100);
+            color: #8A5C1D;
         }
 
-        .status.pending {
-            color: #ffd166;
-            background: rgba(255, 209, 102, 0.1);
+        .payout-status.paid {
+            background: var(--green-100);
+            color: var(--green-700);
         }
 
-        .status.paid {
-            color: #66e38a;
-            background: rgba(102, 227, 138, 0.1);
-        }
-
-        /* =========================================================
-           BUTTONS
-        ========================================================= */
-
-        .action-group {
+        .payout-actions {
             display: flex;
-            gap: 8px;
             align-items: center;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        .btn {
-            border: 0;
-            border-radius: 10px;
-            padding: 10px 13px;
-            font-size: 12px;
-            font-weight: 700;
+        .payout-action-btn {
+            border: 1px solid var(--line-strong);
+            background: #fff;
+            color: var(--ink);
+            border-radius: var(--radius-s);
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: .8rem;
+            font-weight: 600;
             cursor: pointer;
             transition:
-                transform 0.2s ease,
-                opacity 0.2s ease,
-                background 0.2s ease;
+                background .15s ease,
+                border-color .15s ease,
+                color .15s ease,
+                transform .15s ease;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
+        .payout-action-btn:hover {
+            border-color: var(--green-700);
+            color: var(--green-700);
         }
 
-        .btn:disabled {
+        .payout-action-btn:active {
+            transform: translateY(1px);
+        }
+
+        .payout-action-btn.pay {
+            background: var(--green-700);
+            border-color: var(--green-700);
+            color: #fff;
+        }
+
+        .payout-action-btn.pay:hover {
+            background: var(--green-600);
+            border-color: var(--green-600);
+            color: #fff;
+        }
+
+        .payout-action-btn.paid {
+            background: var(--green-100);
+            border-color: var(--green-100);
+            color: var(--green-700);
             cursor: not-allowed;
-            opacity: 0.55;
-            transform: none;
+            opacity: .8;
         }
 
-        .btn-view {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
+        .payout-action-btn[disabled] {
+            cursor: not-allowed;
         }
 
-        .btn-view:hover {
-            background: rgba(255, 255, 255, 0.16);
+        .payout-farmer {
+            font-weight: 600;
+            color: var(--green-900);
         }
 
-        .btn-pay {
-            color: #06220c;
-            background: #72ed91;
+        .payout-order {
+            font-size: .8rem;
+            color: var(--ink-soft);
         }
 
-        .btn-pay:hover {
-            background: #8af3a4;
+        .payout-details {
+            display: grid;
+            gap: 14px;
+            margin: 22px 0;
         }
 
-        .btn-paid {
-            color: #79e996;
-            background: rgba(114, 237, 145, 0.08);
-            border: 1px solid rgba(114, 237, 145, 0.2);
-            cursor: default;
-        }
-
-        /* =========================================================
-           EMPTY / LOADING / ERROR
-        ========================================================= */
-
-        .state-box {
-            padding: 60px 25px;
-            text-align: center;
-            color: rgba(235, 255, 238, 0.6);
-        }
-
-        .state-box strong {
-            display: block;
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-size: 17px;
-        }
-
-        /* =========================================================
-           MODAL
-        ========================================================= */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            width: min(520px, 100%);
-            background: #0b2410;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 28px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-            animation: modalIn 0.2s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px) scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal h2 {
-            margin: 0 0 10px;
-            font-size: 23px;
-        }
-
-        .modal p {
-            margin: 0;
-            color: rgba(235, 255, 238, 0.7);
-            line-height: 1.65;
-        }
-
-        .confirmation-details {
-            margin: 20px 0;
-            padding: 16px;
-            border-radius: 13px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .confirmation-row {
+        .payout-detail {
             display: flex;
             justify-content: space-between;
-            gap: 15px;
-            padding: 8px 0;
-            font-size: 14px;
+            gap: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--line);
         }
 
-        .confirmation-row span:first-child {
-            color: rgba(235, 255, 238, 0.55);
+        .payout-detail:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
-        .confirmation-row span:last-child {
-            font-weight: 700;
+        .payout-detail span:first-child {
+            color: var(--ink-soft);
+            font-size: .85rem;
+        }
+
+        .payout-detail strong {
+            color: var(--ink);
             text-align: right;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 22px;
-        }
-
-        .modal-cancel {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .modal-confirm {
-            color: #06220c;
-            background: #72ed91;
-        }
-
-        /* =========================================================
-           TOAST
-        ========================================================= */
-
-        .toast-container {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: min(380px, calc(100% - 40px));
-        }
-
-        .toast {
-            padding: 15px 17px;
-            border-radius: 13px;
-            background: #102d16;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            color: #ffffff;
-            font-size: 13px;
-            line-height: 1.5;
-            animation: toastIn 0.25s ease;
-        }
-
-        .toast.success {
-            border-color: rgba(114, 237, 145, 0.3);
-        }
-
-        .toast.error {
-            border-color: rgba(255, 100, 100, 0.3);
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* =========================================================
-           PAYOUT DETAILS MODAL
-        ========================================================= */
-
-        .details-modal {
-            width: min(620px, 100%);
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .detail-card {
-            padding: 14px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-        }
-
-        .detail-card.full {
-            grid-column: 1 / -1;
-        }
-
-        .detail-label {
-            display: block;
-            margin-bottom: 6px;
-            color: rgba(235, 255, 238, 0.5);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .detail-value {
-            font-size: 14px;
-            font-weight: 700;
+            font-size: .9rem;
             word-break: break-word;
         }
 
-        /* =========================================================
-           MOBILE
-        ========================================================= */
+        .confirm-warning {
+            background: var(--gold-100);
+            border: 1px solid #E7D2A9;
+            color: #76501B;
+            border-radius: var(--radius-m);
+            padding: 14px 16px;
+            font-size: .85rem;
+            margin-bottom: 20px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .loading-row td,
+        .empty-row td {
+            text-align: center;
+            padding: 42px 20px;
+            color: var(--ink-soft);
+        }
+
+        .error-message {
+            background: var(--red-100);
+            border: 1px solid #E8BDB8;
+            color: var(--red);
+            border-radius: var(--radius-m);
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
 
         @media (max-width: 900px) {
-            .summary-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .payout-summary {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
         @media (max-width: 600px) {
-            .payout-page {
-                width: min(100% - 24px, 1500px);
-                padding-top: 25px;
-            }
-
-            .summary-grid {
+            .payout-summary {
                 grid-template-columns: 1fr;
             }
 
-            .details-grid {
-                grid-template-columns: 1fr;
+            .payout-toolbar {
+                align-items: stretch;
             }
 
-            .detail-card.full {
-                grid-column: auto;
+            .payout-toolbar .search-bar {
+                max-width: none;
+                width: 100%;
             }
 
-            .modal {
-                padding: 22px;
+            .payout-detail {
+                flex-direction: column;
+                gap: 4px;
             }
 
-            .modal-actions {
+            .payout-detail strong {
+                text-align: left;
+            }
+
+            .confirm-actions {
                 flex-direction: column-reverse;
             }
 
-            .modal-actions .btn {
+            .confirm-actions .btn {
                 width: 100%;
             }
         }
     </style>
+    ```
+
 </head>
 
 <body>
 
-    <!-- =========================================================
-         ADMIN PAGE
-    ========================================================= -->
+    ```
+    <!-- ============================================================
+     ADMIN DASHBOARD SHELL
+     ============================================================ -->
 
-    <main class="payout-page">
+    <div class="dash">
 
-        <header class="page-header">
-            <h1>Farmer Payouts</h1>
-            <p>
-                Review farmer payment details and record completed payouts.
-            </p>
-        </header>
+        <!-- SIDEBAR -->
+        <aside class="dash__sidebar" id="adminSidebar">
 
-
-        <!-- =====================================================
-             SUMMARY
-        ====================================================== -->
-
-        <section class="summary-grid">
-
-            <div class="summary-card">
-                <div class="summary-label">Total Farmer Earnings</div>
-                <div class="summary-value" id="totalEarnings">₦0</div>
+            <div style="margin-bottom: 24px; padding: 0 14px;">
+                <div class="navbar__logo" style="color:#fff;">
+                    <span class="mark">A&S</span>
+                    <span>Admin</span>
+                </div>
             </div>
 
-            <div class="summary-card">
-                <div class="summary-label">Pending Payouts</div>
-                <div class="summary-value" id="pendingAmount">₦0</div>
+            <a href="dashboard.html">
+                Admin dashboard
+            </a>
+
+            <a href="admin-payouts.html" class="active">
+                Payouts
+            </a>
+
+            <div class="divider"></div>
+
+            <a href="../index.html">
+                Back to website
+            </a>
+
+        </aside>
+
+
+        <!-- MAIN -->
+        <main class="dash__main">
+
+            <!-- HEADER -->
+            <div class="dash__head">
+
+                <div>
+                    <h1 style="font-size:2rem; margin-bottom:6px;">
+                        Farmer Payouts
+                    </h1>
+
+                    <p class="mb-0">
+                        Review and manage payments owed to farmers.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-ghost" id="refreshBtn">
+                    Refresh
+                </button>
+
             </div>
 
-            <div class="summary-card">
-                <div class="summary-label">Paid Out</div>
-                <div class="summary-value" id="paidAmount">₦0</div>
+
+            <!-- ERROR -->
+            <div class="error-message" id="errorMessage">
             </div>
 
-            <div class="summary-card">
-                <div class="summary-label">Farmers</div>
-                <div class="summary-value" id="farmerCount">0</div>
+
+            <!-- SUMMARY -->
+            <div class="payout-summary">
+
+                <div class="payout-summary-card">
+
+                    <div class="payout-summary-card__label">
+                        Total Payouts
+                    </div>
+
+                    <div class="payout-summary-card__value" id="totalPayouts">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="payout-summary-card">
+
+                    <div class="payout-summary-card__label">
+                        Pending Payments
+                    </div>
+
+                    <div class="payout-summary-card__value" id="pendingPayouts">
+                        ₦0
+                    </div>
+
+                </div>
+
+
+                <div class="payout-summary-card">
+
+                    <div class="payout-summary-card__label">
+                        Paid
+                    </div>
+
+                    <div class="payout-summary-card__value" id="paidPayouts">
+                        ₦0
+                    </div>
+
+                </div>
+
             </div>
 
-        </section>
 
+            <!-- TOOLBAR -->
+            <div class="payout-toolbar">
 
-        <!-- =====================================================
-             SEARCH / FILTER
-        ====================================================== -->
+                <div class="search-bar">
 
-        <section class="toolbar">
+                    <input type="text" class="input" id="searchInput" placeholder="Search farmer, bank or order...">
 
-            <div class="search-box">
-                <input type="search" id="searchInput" placeholder="Search farmer, order ID or account number..."
-                    autocomplete="off">
+                </div>
+
             </div>
 
-            <div class="filter-box">
-                <select id="statusFilter">
-                    <option value="all">All payouts</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Paid">Paid</option>
-                </select>
-            </div>
 
-        </section>
-
-
-        <!-- =====================================================
-             PAYOUT TABLE
-        ====================================================== -->
-
-        <section class="table-card">
-
-            <div class="table-scroll">
+            <!-- TABLE -->
+            <div class="table-wrap">
 
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>Farmer</th>
                             <th>Order</th>
+                            <th>Bank</th>
+                            <th>Account</th>
                             <th>Farmer Earnings</th>
-                            <th>Bank Details</th>
+                            <th>Commission</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
+
                     </thead>
 
-                    <tbody id="payoutTableBody">
+                    <tbody id="payoutsTable">
 
-                        <tr>
-                            <td colspan="6">
-                                <div class="state-box">
-                                    Loading payouts...
-                                </div>
+                        <tr class="loading-row">
+
+                            <td colspan="8">
+                                Loading payouts...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -651,88 +405,79 @@
 
             </div>
 
-        </section>
-
-    </main>
-
-
-    <!-- =========================================================
-         PAYMENT CONFIRMATION MODAL
-    ========================================================= -->
-
-    <div class="modal-overlay" id="paymentConfirmModal" aria-hidden="true">
-
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentConfirmTitle">
-
-            <h2 id="paymentConfirmTitle">
-                Confirm farmer payment
-            </h2>
-
-            <p>
-                Only continue if you have actually transferred the money
-                to the farmer's bank account.
-            </p>
-
-            <div class="confirmation-details">
-
-                <div class="confirmation-row">
-                    <span>Farmer</span>
-                    <span id="confirmFarmerName">—</span>
-                </div>
-
-                <div class="confirmation-row">
-                    <span>Bank</span>
-                    <span id="confirmBankName">—</span>
-                </div>
-
-                <div class="confirmation-row">
-                    <span>Account</span>
-                    <span id="confirmAccountNumber">—</span>
-                </div>
-
-                <div class="confirmation-row">
-                    <span>Amount</span>
-                    <span id="confirmAmount">₦0</span>
-                </div>
-
-            </div>
-
-            <div class="modal-actions">
-
-                <button type="button" class="btn modal-cancel" id="cancelPaymentBtn">
-                    Cancel
-                </button>
-
-                <button type="button" class="btn modal-confirm" id="confirmPaymentBtn">
-                    Yes, Mark as Paid
-                </button>
-
-            </div>
-
-        </div>
+        </main>
 
     </div>
 
 
-    <!-- =========================================================
-         VIEW PAYOUT DETAILS MODAL
-    ========================================================= -->
+    <!-- ============================================================
+     VIEW PAYOUT MODAL
+     ============================================================ -->
 
-    <div class="modal-overlay" id="detailsModal" aria-hidden="true">
+    <div class="modal-overlay" id="viewModal" style="display:none;">
 
-        <div class="modal details-modal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+        <div class="modal">
 
-            <h2 id="detailsTitle">
+            <button type="button" class="modal__close" id="closeViewModal">
+                ×
+            </button>
+
+            <h2 style="font-size:1.45rem;">
                 Payout Details
             </h2>
 
-            <div class="details-grid" id="detailsGrid">
+            <p>
+                Complete details for this farmer payout.
+            </p>
+
+            <div class="payout-details" id="viewPayoutDetails">
             </div>
 
-            <div class="modal-actions">
+            <button type="button" class="btn btn-ghost btn-block" id="viewModalCloseButton">
+                Close
+            </button>
 
-                <button type="button" class="btn modal-cancel" id="closeDetailsBtn">
-                    Close
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================
+     CONFIRM PAYMENT MODAL
+     ============================================================ -->
+
+    <div class="modal-overlay" id="confirmModal" style="display:none;">
+
+        <div class="modal">
+
+            <button type="button" class="modal__close" id="closeConfirmModal">
+                ×
+            </button>
+
+            <h2 style="font-size:1.45rem;">
+                Confirm Payment
+            </h2>
+
+            <p>
+                Are you sure you want to mark this farmer payout as paid?
+            </p>
+
+            <div class="confirm-warning">
+                Please verify the farmer's bank details and payment amount
+                before confirming. This action records the payout as paid.
+            </div>
+
+            <div class="payout-details" id="confirmPayoutDetails">
+            </div>
+
+            <div class="confirm-actions">
+
+                <button type="button" class="btn btn-ghost" id="cancelPaymentBtn">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn btn-primary" id="confirmPaymentBtn">
+                    Confirm Paid
                 </button>
 
             </div>
@@ -742,71 +487,38 @@
     </div>
 
 
-    <!-- =========================================================
-         TOAST CONTAINER
-    ========================================================= -->
-
-    <div class="toast-container" id="toastContainer"></div>
+    <!-- TOAST ROOT -->
+    <div id="toast-root"></div>
 
 
-    <!-- =========================================================
-         YOUR EXISTING API
-    ========================================================= -->
+    <!-- ============================================================
+     API
+     ============================================================ -->
 
     <script src="../js/api.js"></script>
 
 
-    <!-- =========================================================
-         PAGE SCRIPT
-    ========================================================= -->
+    <!-- ============================================================
+     PAGE SCRIPT
+     ============================================================ -->
 
     <script>
 
-        const user = requireAuth("../", "Admin");
+        "use strict";
+
 
         /* =========================================================
-           DATA
-        ========================================================= */
+           STATE
+           ========================================================= */
 
-        let allPayouts = [];
-
+        let payouts = [];
         let selectedPayout = null;
-
         let paymentRequestRunning = false;
 
 
         /* =========================================================
-           ELEMENTS
-        ========================================================= */
-
-        const tableBody =
-            document.getElementById("payoutTableBody");
-
-        const searchInput =
-            document.getElementById("searchInput");
-
-        const statusFilter =
-            document.getElementById("statusFilter");
-
-        const paymentConfirmModal =
-            document.getElementById("paymentConfirmModal");
-
-        const detailsModal =
-            document.getElementById("detailsModal");
-
-        const confirmPaymentBtn =
-            document.getElementById("confirmPaymentBtn");
-
-        const cancelPaymentBtn =
-            document.getElementById("cancelPaymentBtn");
-
-        const closeDetailsBtn =
-            document.getElementById("closeDetailsBtn");
-
-
-        /* =========================================================
            HELPERS
-        ========================================================= */
+           ========================================================= */
 
         function escapeHtml(value) {
 
@@ -816,18 +528,14 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+
         }
 
 
-        function formatNaira(value) {
+        function formatMoney(value) {
 
-            return "₦" + Number(value || 0).toLocaleString(
-                "en-NG",
-                {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2
-                }
-            );
+            return `₦${Number(value || 0).toLocaleString("en-NG")}`;
+
         }
 
 
@@ -844,678 +552,200 @@
             return date.toLocaleDateString(
                 "en-NG",
                 {
-                    year: "numeric",
+                    day: "2-digit",
                     month: "short",
-                    day: "numeric"
+                    year: "numeric"
                 }
             );
+
         }
 
 
         function showToast(message, type = "success") {
 
-            const container =
-                document.getElementById("toastContainer");
+            const root =
+                document.getElementById("toast-root");
 
             const toast =
                 document.createElement("div");
 
-            toast.className = `toast ${type}`;
+            toast.className =
+                type === "error"
+                    ? "toast error"
+                    : "toast";
 
             toast.textContent = message;
 
-            container.appendChild(toast);
+            root.appendChild(toast);
 
             setTimeout(() => {
 
-                toast.style.opacity = "0";
-                toast.style.transform = "translateX(15px)";
-
-                setTimeout(() => {
-                    toast.remove();
-                }, 250);
+                toast.remove();
 
             }, 3500);
+
+        }
+
+
+        function showError(message) {
+
+            const element =
+                document.getElementById("errorMessage");
+
+            element.textContent = message;
+            element.style.display = "block";
+
+        }
+
+
+        function hideError() {
+
+            const element =
+                document.getElementById("errorMessage");
+
+            element.textContent = "";
+            element.style.display = "none";
+
         }
 
 
         /* =========================================================
-           MODALS
-        ========================================================= */
+           AUTHENTICATION
+           ========================================================= */
 
-        function openPaymentConfirmation(payout) {
+        async function checkAdminAccess() {
 
-            /*
-             * IMPORTANT:
-             * Do not allow the confirmation modal to open for
-             * an already-paid payout.
-             */
+            const token =
+                localStorage.getItem("token");
 
-            if (!payout) return;
+            if (!token) {
 
-            if (
-                String(payout.status || "").toLowerCase() === "paid"
-            ) {
-                showToast(
-                    "This payout has already been marked as paid.",
-                    "error"
+                window.location.href =
+                    "../login.html";
+
+                return false;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "https://a-s-ventures-backend.onrender.com/api/profile",
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+
+                const user =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("accountType");
+
+                    window.location.href =
+                        "../login.html";
+
+                    return false;
+                }
+
+
+                const role =
+                    String(user.role || "")
+                        .toLowerCase();
+
+
+                if (role !== "admin") {
+
+                    alert(
+                        "You do not have permission to access the admin dashboard."
+                    );
+
+                    window.location.href =
+                        "../index.html";
+
+                    return false;
+                }
+
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "ADMIN AUTH ERROR:",
+                    error
                 );
 
-                return;
+                /*
+                 * Do not immediately redirect when the backend is
+                 * temporarily unavailable. This prevents the page
+                 * from throwing the user back to login unnecessarily.
+                 */
+
+                showError(
+                    "Could not verify your admin session. Please check your connection and try again."
+                );
+
+                return false;
             }
 
-            selectedPayout = payout;
-
-            document.getElementById(
-                "confirmFarmerName"
-            ).textContent =
-                payout.farmer?.fullName ||
-                payout.farmerConfirmation?.farmerName ||
-                payout.farmerName ||
-                "—";
-
-            document.getElementById(
-                "confirmBankName"
-            ).textContent =
-                payout.farmerConfirmation?.bankName ||
-                payout.bankName ||
-                "—";
-
-            document.getElementById(
-                "confirmAccountNumber"
-            ).textContent =
-                payout.farmerConfirmation?.accountNumber ||
-                payout.accountNumber ||
-                "—";
-
-            document.getElementById(
-                "confirmAmount"
-            ).textContent =
-                formatNaira(payout.farmerEarnings);
-
-            paymentConfirmModal.classList.add("active");
-            paymentConfirmModal.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-        }
-
-
-        function closePaymentConfirmation() {
-
-            paymentConfirmModal.classList.remove("active");
-
-            paymentConfirmModal.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-            selectedPayout = null;
-
-            paymentRequestRunning = false;
-
-            confirmPaymentBtn.disabled = false;
-
-            confirmPaymentBtn.textContent =
-                "Yes, Mark as Paid";
-        }
-
-
-        function openDetails(payout) {
-
-            if (!payout) return;
-
-            const farmerName =
-                payout.farmer?.fullName ||
-                payout.farmerName ||
-                "—";
-
-            const farmerPhone =
-                payout.farmer?.phone ||
-                payout.farmerConfirmation?.farmerPhone ||
-                payout.farmerPhone ||
-                "—";
-
-            const bankName =
-                payout.farmerConfirmation?.bankName ||
-                payout.bankName ||
-                "—";
-
-            const accountNumber =
-                payout.farmerConfirmation?.accountNumber ||
-                payout.accountNumber ||
-                "—";
-
-            const accountName =
-                payout.farmerConfirmation?.accountName ||
-                payout.accountName ||
-                "—";
-
-            const status =
-                payout.status || "Pending";
-
-            document.getElementById("detailsGrid").innerHTML = `
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Farmer
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(farmerName)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Phone
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(farmerPhone)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Bank
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(bankName)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Account Number
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(accountNumber)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Account Name
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(accountName)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Farmer Earnings
-                    </span>
-
-                    <div class="detail-value">
-                        ${formatNaira(payout.farmerEarnings)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        A&S Commission
-                    </span>
-
-                    <div class="detail-value">
-                        ${formatNaira(payout.commission)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Status
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(status)}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Order ID
-                    </span>
-
-                    <div class="detail-value">
-                        ${escapeHtml(payout.orderId || "—")}
-                    </div>
-                </div>
-
-
-                <div class="detail-card">
-                    <span class="detail-label">
-                        Payout Date
-                    </span>
-
-                    <div class="detail-value">
-                        ${formatDate(payout.paidAt)}
-                    </div>
-                </div>
-
-            `;
-
-            detailsModal.classList.add("active");
-
-            detailsModal.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-        }
-
-
-        function closeDetails() {
-
-            detailsModal.classList.remove("active");
-
-            detailsModal.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-        }
-
-
-        /* =========================================================
-           SUMMARY
-        ========================================================= */
-
-        function updateSummary() {
-
-            let totalEarnings = 0;
-            let pendingAmount = 0;
-            let paidAmount = 0;
-
-            const farmers = new Set();
-
-            allPayouts.forEach(payout => {
-
-                const amount =
-                    Number(payout.farmerEarnings || 0);
-
-                totalEarnings += amount;
-
-                const status =
-                    String(
-                        payout.status || "Pending"
-                    ).toLowerCase();
-
-                if (status === "paid") {
-                    paidAmount += amount;
-                } else {
-                    pendingAmount += amount;
-                }
-
-                const farmerId =
-                    payout.farmer?._id ||
-                    payout.farmer?._id?.toString() ||
-                    payout.farmerName;
-
-                if (farmerId) {
-                    farmers.add(String(farmerId));
-                }
-
-            });
-
-            document.getElementById(
-                "totalEarnings"
-            ).textContent =
-                formatNaira(totalEarnings);
-
-            document.getElementById(
-                "pendingAmount"
-            ).textContent =
-                formatNaira(pendingAmount);
-
-            document.getElementById(
-                "paidAmount"
-            ).textContent =
-                formatNaira(paidAmount);
-
-            document.getElementById(
-                "farmerCount"
-            ).textContent =
-                farmers.size;
-        }
-
-
-        /* =========================================================
-           RENDER TABLE
-        ========================================================= */
-
-        function renderPayouts() {
-
-            const search =
-                searchInput.value
-                    .trim()
-                    .toLowerCase();
-
-            const filter =
-                statusFilter.value;
-
-            const filtered =
-                allPayouts.filter(payout => {
-
-                    const farmerName =
-                        payout.farmer?.fullName ||
-                        payout.farmerName ||
-                        "";
-
-                    const orderId =
-                        payout.orderId ||
-                        "";
-
-                    const accountNumber =
-                        payout.farmerConfirmation?.accountNumber ||
-                        payout.accountNumber ||
-                        "";
-
-                    const searchable =
-                        `${farmerName} ${orderId} ${accountNumber}`
-                            .toLowerCase();
-
-                    const matchesSearch =
-                        !search ||
-                        searchable.includes(search);
-
-                    const matchesStatus =
-                        filter === "all" ||
-                        String(
-                            payout.status || "Pending"
-                        ) === filter;
-
-                    return (
-                        matchesSearch &&
-                        matchesStatus
-                    );
-                });
-
-
-            if (!filtered.length) {
-
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="state-box">
-
-                                <strong>
-                                    No payouts found
-                                </strong>
-
-                                There are no payouts matching
-                                your current search or filter.
-
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                return;
-            }
-
-
-            tableBody.innerHTML =
-                filtered.map(payout => {
-
-                    const farmerName =
-                        payout.farmer?.fullName ||
-                        payout.farmerName ||
-                        "Unknown farmer";
-
-                    const farmerPhone =
-                        payout.farmer?.phone ||
-                        payout.farmerConfirmation?.farmerPhone ||
-                        payout.farmerPhone ||
-                        "";
-
-                    const bankName =
-                        payout.farmerConfirmation?.bankName ||
-                        payout.bankName ||
-                        "—";
-
-                    const accountNumber =
-                        payout.farmerConfirmation?.accountNumber ||
-                        payout.accountNumber ||
-                        "—";
-
-                    const accountName =
-                        payout.farmerConfirmation?.accountName ||
-                        payout.accountName ||
-                        "—";
-
-                    const status =
-                        String(
-                            payout.status || "Pending"
-                        );
-
-                    const isPaid =
-                        status.toLowerCase() === "paid";
-
-
-                    return `
-
-                        <tr
-                            data-payout-id="${escapeHtml(
-                        payout._id || ""
-                    )}"
-                        >
-
-                            <td>
-
-                                <div class="farmer-name">
-                                    ${escapeHtml(farmerName)}
-                                </div>
-
-                                ${farmerPhone
-                            ? `
-                                        <div class="farmer-contact">
-                                            ${escapeHtml(farmerPhone)}
-                                        </div>
-                                        `
-                            : ""
-                        }
-
-                            </td>
-
-
-                            <td>
-                                <span class="account-number">
-                                    #${escapeHtml(
-                            String(
-                                payout.orderId || ""
-                            ).slice(-8).toUpperCase()
-                        )}
-                                </span>
-                            </td>
-
-
-                            <td>
-
-                                <div class="amount">
-                                    ${formatNaira(
-                            payout.farmerEarnings
-                        )}
-                                </div>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="bank-details">
-
-                                    <div class="bank-name">
-                                        ${escapeHtml(bankName)}
-                                    </div>
-
-                                    <div class="account-number">
-                                        ${escapeHtml(accountNumber)}
-                                    </div>
-
-                                    <div class="account-name">
-                                        ${escapeHtml(accountName)}
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="status ${isPaid
-                            ? "paid"
-                            : "pending"
-                        }"
-                                >
-                                    ${isPaid
-                            ? "Paid"
-                            : "Pending"
-                        }
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action-group">
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-view"
-                                        data-action="view"
-                                        data-id="${escapeHtml(
-                            payout._id || ""
-                        )}"
-                                    >
-                                        View
-                                    </button>
-
-
-                                    ${isPaid
-
-                            ? `
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-paid"
-                                                disabled
-                                            >
-                                                Paid
-                                            </button>
-
-                                            `
-
-                            : `
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-pay"
-                                                data-action="pay"
-                                                data-id="${escapeHtml(
-                                payout._id || ""
-                            )}"
-                                            >
-                                                Mark as Paid
-                                            </button>
-
-                                            `
-                        }
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }).join("");
-        }
-
-
-        /* =========================================================
-           FIND PAYOUT
-        ========================================================= */
-
-        function findPayoutById(id) {
-
-            return allPayouts.find(
-                payout =>
-                    String(payout._id) === String(id)
-            );
         }
 
 
         /* =========================================================
            LOAD PAYOUTS
-        ========================================================= */
+           ========================================================= */
 
         async function loadPayouts() {
 
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="6">
-                        <div class="state-box">
-                            Loading payouts...
-                        </div>
-                    </td>
-                </tr>
-            `;
+            hideError();
+
+            const table =
+                document.getElementById("payoutsTable");
+
+            table.innerHTML = `
+            <tr class="loading-row">
+                <td colspan="8">
+                    Loading payouts...
+                </td>
+            </tr>
+        `;
+
 
             try {
-
-                /*
-                 * This uses the API function already added
-                 * to your api.js:
-                 *
-                 * API.getAdminPayouts()
-                 */
 
                 const response =
                     await API.getAdminPayouts();
 
 
                 /*
-                 * Backend returns:
+                 * API may return:
                  *
-                 * {
-                 *   success: true,
-                 *   payouts: [...]
-                 * }
+                 * { success: true, payouts: [...] }
+                 *
+                 * or directly an array.
                  */
 
-                if (
-                    !response ||
-                    !Array.isArray(response.payouts)
-                ) {
-
-                    throw new Error(
-                        "Invalid payout data received from server."
-                    );
-                }
-
-
-                allPayouts =
-                    response.payouts;
+                payouts =
+                    Array.isArray(response)
+                        ? response
+                        : Array.isArray(response?.payouts)
+                            ? response.payouts
+                            : [];
 
 
                 updateSummary();
 
                 renderPayouts();
+
 
             } catch (error) {
 
@@ -1524,46 +754,657 @@
                     error
                 );
 
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
 
-                            <div class="state-box">
+                table.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="8">
+                        Could not load payouts.
+                    </td>
+                </tr>
+            `;
 
-                                <strong>
-                                    Unable to load payouts
-                                </strong>
 
-                                ${escapeHtml(
+                showError(
                     error.message ||
-                    "Something went wrong."
-                )}
+                    "Could not load farmer payouts."
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           SUMMARY
+           ========================================================= */
+
+        function updateSummary() {
+
+            const total =
+                payouts.length;
+
+
+            let pendingAmount = 0;
+            let paidAmount = 0;
+
+
+            payouts.forEach(payout => {
+
+                const amount =
+                    Number(
+                        payout.farmerEarnings || 0
+                    );
+
+
+                if (
+                    String(payout.status || "")
+                        .toLowerCase() === "paid"
+                ) {
+
+                    paidAmount += amount;
+
+                } else {
+
+                    pendingAmount += amount;
+
+                }
+
+            });
+
+
+            document.getElementById(
+                "totalPayouts"
+            ).textContent = total;
+
+
+            document.getElementById(
+                "pendingPayouts"
+            ).textContent =
+                formatMoney(pendingAmount);
+
+
+            document.getElementById(
+                "paidPayouts"
+            ).textContent =
+                formatMoney(paidAmount);
+
+        }
+
+
+        /* =========================================================
+           RENDER PAYOUTS
+           ========================================================= */
+
+        function renderPayouts() {
+
+            const table =
+                document.getElementById("payoutsTable");
+
+
+            const search =
+                document.getElementById(
+                    "searchInput"
+                )
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+
+            const filtered =
+                payouts.filter(payout => {
+
+                    if (!search) {
+                        return true;
+                    }
+
+
+                    const farmer =
+                        payout.farmer?.fullName ||
+                        payout.farmerConfirmation?.farmerName ||
+                        payout.farmerName ||
+                        "";
+
+
+                    const bank =
+                        payout.farmerConfirmation?.bankName ||
+                        payout.bankName ||
+                        "";
+
+
+                    const accountName =
+                        payout.farmerConfirmation?.accountName ||
+                        payout.accountName ||
+                        "";
+
+
+                    const accountNumber =
+                        payout.farmerConfirmation?.accountNumber ||
+                        payout.accountNumber ||
+                        "";
+
+
+                    const orderId =
+                        payout.orderId ||
+                        "";
+
+
+                    return (
+                        String(farmer)
+                            .toLowerCase()
+                            .includes(search) ||
+
+                        String(bank)
+                            .toLowerCase()
+                            .includes(search) ||
+
+                        String(accountName)
+                            .toLowerCase()
+                            .includes(search) ||
+
+                        String(accountNumber)
+                            .toLowerCase()
+                            .includes(search) ||
+
+                        String(orderId)
+                            .toLowerCase()
+                            .includes(search)
+                    );
+
+                });
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="8">
+                        No payouts found.
+                    </td>
+                </tr>
+            `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                filtered.map(payout => {
+
+                    const farmerName =
+                        payout.farmer?.fullName ||
+                        payout.farmerConfirmation?.farmerName ||
+                        payout.farmerName ||
+                        "Unknown farmer";
+
+
+                    const bankName =
+                        payout.farmerConfirmation?.bankName ||
+                        payout.bankName ||
+                        "—";
+
+
+                    const accountNumber =
+                        payout.farmerConfirmation?.accountNumber ||
+                        payout.accountNumber ||
+                        "—";
+
+
+                    const accountName =
+                        payout.farmerConfirmation?.accountName ||
+                        payout.accountName ||
+                        "—";
+
+
+                    const status =
+                        String(
+                            payout.status || "Pending"
+                        );
+
+
+                    const isPaid =
+                        status.toLowerCase() === "paid";
+
+
+                    return `
+
+                    <tr>
+
+                        <td>
+                            <div class="payout-farmer">
+                                ${escapeHtml(farmerName)}
+                            </div>
+
+                            <div class="payout-order">
+                                ${escapeHtml(
+                        payout.farmer?.phone ||
+                        payout.farmerConfirmation?.farmerPhone ||
+                        payout.farmerPhone ||
+                        ""
+                    )}
+                            </div>
+                        </td>
+
+
+                        <td>
+
+                            <div class="payout-order">
+                                #${escapeHtml(
+                        String(
+                            payout.orderId || "—"
+                        ).slice(-8)
+                    )}
+                            </div>
+
+                            <div class="payout-order">
+                                ${escapeHtml(
+                        formatDate(
+                            payout.createdAt
+                        )
+                    )}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(bankName)}
+                        </td>
+
+
+                        <td>
+
+                            <div>
+                                ${escapeHtml(accountNumber)}
+                            </div>
+
+                            <div class="payout-order">
+                                ${escapeHtml(accountName)}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            <strong>
+                                ${formatMoney(
+                        payout.farmerEarnings
+                    )}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            ${formatMoney(
+                        payout.commission
+                    )}
+                        </td>
+
+
+                        <td>
+
+                            <span class="payout-status ${isPaid
+                            ? "paid"
+                            : "pending"
+                        }">
+
+                                ${escapeHtml(status)}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="payout-actions">
+
+                                <button
+                                    type="button"
+                                    class="payout-action-btn"
+                                    data-action="view"
+                                    data-payout-id="${escapeHtml(
+                            payout._id
+                        )}">
+                                    View
+                                </button>
+
+
+                                ${isPaid
+
+                            ? `
+                                            <button
+                                                type="button"
+                                                class="payout-action-btn paid"
+                                                disabled>
+                                                Paid
+                                            </button>
+                                        `
+
+                            : `
+                                            <button
+                                                type="button"
+                                                class="payout-action-btn pay"
+                                                data-action="pay"
+                                                data-payout-id="${escapeHtml(
+                                payout._id
+                            )}">
+                                                Mark as Paid
+                                            </button>
+                                        `
+                        }
 
                             </div>
 
                         </td>
+
                     </tr>
+
                 `;
 
+                }).join("");
+
+        }
+
+
+        /* =========================================================
+           FIND PAYOUT
+           ========================================================= */
+
+        function findPayout(id) {
+
+            return payouts.find(
+                payout =>
+                    String(payout._id) === String(id)
+            );
+
+        }
+
+
+        /* =========================================================
+           VIEW MODAL
+           ========================================================= */
+
+        function openViewModal(payout) {
+
+            if (!payout) return;
+
+
+            selectedPayout = payout;
+
+
+            const farmerName =
+                payout.farmer?.fullName ||
+                payout.farmerConfirmation?.farmerName ||
+                payout.farmerName ||
+                "Unknown farmer";
+
+
+            const farmerPhone =
+                payout.farmer?.phone ||
+                payout.farmerConfirmation?.farmerPhone ||
+                payout.farmerPhone ||
+                "—";
+
+
+            const bankName =
+                payout.farmerConfirmation?.bankName ||
+                payout.bankName ||
+                "—";
+
+
+            const accountNumber =
+                payout.farmerConfirmation?.accountNumber ||
+                payout.accountNumber ||
+                "—";
+
+
+            const accountName =
+                payout.farmerConfirmation?.accountName ||
+                payout.accountName ||
+                "—";
+
+
+            document.getElementById(
+                "viewPayoutDetails"
+            ).innerHTML = `
+
+            <div class="payout-detail">
+                <span>Farmer</span>
+                <strong>
+                    ${escapeHtml(farmerName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Phone</span>
+                <strong>
+                    ${escapeHtml(farmerPhone)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Order</span>
+                <strong>
+                    #${escapeHtml(
+                String(
+                    payout.orderId || "—"
+                )
+            )}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Bank</span>
+                <strong>
+                    ${escapeHtml(bankName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Account Number</span>
+                <strong>
+                    ${escapeHtml(accountNumber)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Account Name</span>
+                <strong>
+                    ${escapeHtml(accountName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Farmer Earnings</span>
+                <strong>
+                    ${formatMoney(
+                payout.farmerEarnings
+            )}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>A&S Commission</span>
+                <strong>
+                    ${formatMoney(
+                payout.commission
+            )}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Status</span>
+                <strong>
+                    ${escapeHtml(
+                payout.status || "Pending"
+            )}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Paid At</span>
+                <strong>
+                    ${payout.paidAt
+                    ? escapeHtml(
+                        formatDate(
+                            payout.paidAt
+                        )
+                    )
+                    : "Not paid"
+                }
+                </strong>
+            </div>
+
+        `;
+
+
+            document.getElementById(
+                "viewModal"
+            ).style.display = "flex";
+
+        }
+
+
+        function closeViewModal() {
+
+            document.getElementById(
+                "viewModal"
+            ).style.display = "none";
+
+            selectedPayout = null;
+
+        }
+
+
+        /* =========================================================
+           PAYMENT CONFIRMATION MODAL
+           ========================================================= */
+
+        function openPaymentConfirmation(payout) {
+
+            if (!payout) return;
+
+
+            /*
+             * Frontend protection against double payment.
+             * The backend also protects against it.
+             */
+
+            if (
+                String(payout.status || "")
+                    .toLowerCase() === "paid"
+            ) {
+
                 showToast(
-                    error.message ||
-                    "Unable to load payouts.",
+                    "This payout has already been marked as paid.",
                     "error"
                 );
+
+                return;
             }
+
+
+            selectedPayout = payout;
+
+
+            const farmerName =
+                payout.farmer?.fullName ||
+                payout.farmerConfirmation?.farmerName ||
+                payout.farmerName ||
+                "Unknown farmer";
+
+
+            const bankName =
+                payout.farmerConfirmation?.bankName ||
+                payout.bankName ||
+                "—";
+
+
+            const accountNumber =
+                payout.farmerConfirmation?.accountNumber ||
+                payout.accountNumber ||
+                "—";
+
+
+            const accountName =
+                payout.farmerConfirmation?.accountName ||
+                payout.accountName ||
+                "—";
+
+
+            document.getElementById(
+                "confirmPayoutDetails"
+            ).innerHTML = `
+
+            <div class="payout-detail">
+                <span>Farmer</span>
+                <strong>
+                    ${escapeHtml(farmerName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Bank</span>
+                <strong>
+                    ${escapeHtml(bankName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Account Number</span>
+                <strong>
+                    ${escapeHtml(accountNumber)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Account Name</span>
+                <strong>
+                    ${escapeHtml(accountName)}
+                </strong>
+            </div>
+
+            <div class="payout-detail">
+                <span>Amount to Pay</span>
+                <strong>
+                    ${formatMoney(
+                payout.farmerEarnings
+            )}
+                </strong>
+            </div>
+
+        `;
+
+
+            document.getElementById(
+                "confirmModal"
+            ).style.display = "flex";
+
+        }
+
+
+        function closePaymentConfirmation() {
+
+            if (paymentRequestRunning) {
+                return;
+            }
+
+
+            document.getElementById(
+                "confirmModal"
+            ).style.display = "none";
+
+
+            selectedPayout = null;
+
         }
 
 
         /* =========================================================
            MARK PAYOUT AS PAID
-        ========================================================= */
+           ========================================================= */
 
-        async function markPayoutAsPaid() {
-
-            /*
-             * Prevent multiple requests from the same browser
-             * if the admin double-clicks the confirmation button.
-             */
+        async function markPayoutPaid() {
 
             if (paymentRequestRunning) {
                 return;
@@ -1576,15 +1417,12 @@
 
 
             /*
-             * Frontend protection.
-             *
-             * If it is already Paid, do absolutely nothing.
+             * Check the object again immediately before sending.
              */
 
             if (
-                String(
-                    selectedPayout.status || ""
-                ).toLowerCase() === "paid"
+                String(selectedPayout.status || "")
+                    .toLowerCase() === "paid"
             ) {
 
                 closePaymentConfirmation();
@@ -1601,6 +1439,7 @@
             const orderId =
                 selectedPayout.orderId;
 
+
             const payoutId =
                 selectedPayout._id;
 
@@ -1608,7 +1447,7 @@
             if (!orderId || !payoutId) {
 
                 showToast(
-                    "Missing payout or order ID.",
+                    "Payout information is incomplete.",
                     "error"
                 );
 
@@ -1618,23 +1457,23 @@
 
             paymentRequestRunning = true;
 
-            confirmPaymentBtn.disabled = true;
 
-            confirmPaymentBtn.textContent =
-                "Updating...";
+            const button =
+                document.getElementById(
+                    "confirmPaymentBtn"
+                );
+
+
+            const originalText =
+                button.textContent;
+
+
+            button.disabled = true;
+            button.textContent =
+                "Processing...";
 
 
             try {
-
-                /*
-                 * This calls:
-                 *
-                 * PATCH
-                 * /api/admin/payouts/:orderId/:payoutId/paid
-                 *
-                 * Your backend then checks whether the payout
-                 * is already Paid before changing it.
-                 */
 
                 const response =
                     await API.markPayoutPaid(
@@ -1648,7 +1487,7 @@
                  */
 
                 const localPayout =
-                    allPayouts.find(
+                    payouts.find(
                         payout =>
                             String(payout._id) ===
                             String(payoutId)
@@ -1663,6 +1502,7 @@
                     localPayout.paidAt =
                         response?.payout?.paidAt ||
                         new Date().toISOString();
+
                 }
 
 
@@ -1674,8 +1514,7 @@
 
 
                 showToast(
-                    "Farmer payout marked as paid successfully.",
-                    "success"
+                    "Payout marked as paid successfully."
                 );
 
 
@@ -1688,50 +1527,49 @@
 
 
                 /*
-                 * Important:
-                 *
-                 * If another admin/device already marked
-                 * the payout as Paid, the backend will reject
-                 * this request. We reload the payout list so
-                 * the UI reflects the real database state.
+                 * Reload from the backend.
+                 * This is important because another admin could
+                 * have paid the same payout while this page was open.
                  */
 
                 await loadPayouts();
 
 
-                closePaymentConfirmation();
-
-
                 showToast(
                     error.message ||
-                    "The payout could not be marked as paid.",
+                    "Could not mark payout as paid.",
                     "error"
                 );
+
 
             } finally {
 
                 paymentRequestRunning = false;
 
-                confirmPaymentBtn.disabled = false;
+                button.disabled = false;
+                button.textContent =
+                    originalText;
 
-                confirmPaymentBtn.textContent =
-                    "Yes, Mark as Paid";
             }
+
         }
 
 
         /* =========================================================
-           TABLE CLICK HANDLER
-        ========================================================= */
+           TABLE ACTIONS
+           ========================================================= */
 
-        tableBody.addEventListener(
+        document.getElementById(
+            "payoutsTable"
+        ).addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 const button =
                     event.target.closest(
                         "button[data-action]"
                     );
+
 
                 if (!button) {
                     return;
@@ -1739,10 +1577,12 @@
 
 
                 const payoutId =
-                    button.dataset.id;
+                    button.dataset.payoutId;
+
 
                 const payout =
-                    findPayoutById(payoutId);
+                    findPayout(payoutId);
+
 
                 if (!payout) {
 
@@ -1761,7 +1601,7 @@
 
                 if (action === "view") {
 
-                    openDetails(payout);
+                    openViewModal(payout);
 
                     return;
                 }
@@ -1769,30 +1609,9 @@
 
                 if (action === "pay") {
 
-                    /*
-                     * Extra frontend protection against
-                     * clicking a stale button after another
-                     * admin has already paid it.
-                     */
-
-                    if (
-                        String(
-                            payout.status || ""
-                        ).toLowerCase() === "paid"
-                    ) {
-
-                        showToast(
-                            "This payout has already been paid.",
-                            "error"
-                        );
-
-                        loadPayouts();
-
-                        return;
-                    }
-
-
-                    openPaymentConfirmation(payout);
+                    openPaymentConfirmation(
+                        payout
+                    );
 
                 }
 
@@ -1802,70 +1621,116 @@
 
         /* =========================================================
            SEARCH
-        ========================================================= */
+           ========================================================= */
 
-        searchInput.addEventListener(
+        document.getElementById(
+            "searchInput"
+        ).addEventListener(
             "input",
             renderPayouts
         );
 
 
-        statusFilter.addEventListener(
-            "change",
-            renderPayouts
+        /* =========================================================
+           REFRESH
+           ========================================================= */
+
+        document.getElementById(
+            "refreshBtn"
+        ).addEventListener(
+            "click",
+            async () => {
+
+                if (paymentRequestRunning) {
+                    return;
+                }
+
+                await loadPayouts();
+
+            }
         );
 
 
         /* =========================================================
-           MODAL BUTTONS
-        ========================================================= */
+           VIEW MODAL CONTROLS
+           ========================================================= */
 
-        cancelPaymentBtn.addEventListener(
+        document.getElementById(
+            "closeViewModal"
+        ).addEventListener(
+            "click",
+            closeViewModal
+        );
+
+
+        document.getElementById(
+            "viewModalCloseButton"
+        ).addEventListener(
+            "click",
+            closeViewModal
+        );
+
+
+        document.getElementById(
+            "viewModal"
+        ).addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target.id ===
+                    "viewModal"
+                ) {
+
+                    closeViewModal();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           CONFIRMATION MODAL CONTROLS
+           ========================================================= */
+
+        document.getElementById(
+            "closeConfirmModal"
+        ).addEventListener(
             "click",
             closePaymentConfirmation
         );
 
 
-        confirmPaymentBtn.addEventListener(
+        document.getElementById(
+            "cancelPaymentBtn"
+        ).addEventListener(
             "click",
-            markPayoutAsPaid
+            closePaymentConfirmation
         );
 
 
-        closeDetailsBtn.addEventListener(
+        document.getElementById(
+            "confirmPaymentBtn"
+        ).addEventListener(
             "click",
-            closeDetails
+            markPayoutPaid
         );
 
 
-        /* =========================================================
-           CLOSE MODALS WHEN CLICKING OUTSIDE
-        ========================================================= */
-
-        paymentConfirmModal.addEventListener(
+        document.getElementById(
+            "confirmModal"
+        ).addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 if (
-                    event.target ===
-                    paymentConfirmModal
+                    event.target.id ===
+                    "confirmModal"
                 ) {
+
                     closePaymentConfirmation();
-                }
 
-            }
-        );
-
-
-        detailsModal.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    detailsModal
-                ) {
-                    closeDetails();
                 }
 
             }
@@ -1873,33 +1738,62 @@
 
 
         /* =========================================================
-           ESC KEY
-        ========================================================= */
+           ESCAPE KEY
+           ========================================================= */
 
         document.addEventListener(
             "keydown",
-            function (event) {
+            event => {
 
                 if (event.key !== "Escape") {
                     return;
                 }
 
-                closePaymentConfirmation();
-                closeDetails();
+
+                if (
+                    document.getElementById(
+                        "viewModal"
+                    ).style.display === "flex"
+                ) {
+
+                    closeViewModal();
+
+                }
+
+
+                if (
+                    !paymentRequestRunning &&
+                    document.getElementById(
+                        "confirmModal"
+                    ).style.display === "flex"
+                ) {
+
+                    closePaymentConfirmation();
+
+                }
 
             }
         );
 
 
         /* =========================================================
-           INITIALIZE
-        ========================================================= */
+           PAGE INITIALIZATION
+           ========================================================= */
 
         document.addEventListener(
             "DOMContentLoaded",
-            function () {
+            async () => {
 
-                loadPayouts();
+                const authorized =
+                    await checkAdminAccess();
+
+
+                if (!authorized) {
+                    return;
+                }
+
+
+                await loadPayouts();
 
             }
         );
