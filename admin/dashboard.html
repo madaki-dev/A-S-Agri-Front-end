@@ -75,32 +75,47 @@
     }
 
     async function loadOrders() {
-      const mount = document.getElementById("tab-orders");
 
-      mount.innerHTML = `<div class="skeleton" style="height:260px"></div>`;
+      const mount =
+        document.getElementById("tab-orders");
+
+      mount.innerHTML =
+        `<div class="skeleton" style="height:260px"></div>`;
 
       try {
 
-        const orders = await API.getAdminOrders();
+        const orders =
+          await API.getAdminOrders();
+
 
         if (!orders || !orders.length) {
-          mount.innerHTML = emptyState("No orders yet", "");
+
+          mount.innerHTML =
+            emptyState("No orders yet", "");
+
           return;
         }
 
+
         mount.innerHTML = `
       <div class="table-wrap">
+
         <table>
 
           <thead>
+
             <tr>
               <th>Order</th>
               <th>Buyer</th>
+              <th>Phone</th>
+              <th>WhatsApp</th>
               <th>Products</th>
+              <th>Location</th>
               <th>Total paid</th>
               <th>Status</th>
               <th>Date</th>
             </tr>
+
           </thead>
 
           <tbody>
@@ -112,52 +127,99 @@
               ? o._id.slice(-6).toUpperCase()
               : "N/A";
 
+
           const buyerName =
             o.buyer?.fullName ||
+            o.delivery?.fullname ||
             "Buyer";
+
+
+          const phone =
+            o.buyer?.phone ||
+            o.delivery?.phone ||
+            "";
+
+
+          const whatsapp =
+            o.buyer?.whatsapp ||
+            o.delivery?.whatsapp ||
+            "";
+
 
           const productNames =
             (o.products || [])
-              .map(p =>
-                p.product?.productName ||
+              .map(item =>
+                item.product?.productName ||
                 "Product"
               )
               .join(", ");
 
+
+          const locationParts = [
+            o.delivery?.address,
+            o.delivery?.state
+          ].filter(Boolean);
+
+
+          const location =
+            locationParts.join(", ") ||
+            "Not provided";
+
+
           const totalPaid =
             Number(o.totalAmount || 0);
 
-          const date =
-            o.createdAt;
 
           return `
+
                 <tr>
 
                   <td class="muted">
                     ${escapeHtml(orderId)}
                   </td>
 
+
                   <td>
                     ${escapeHtml(buyerName)}
                   </td>
+
+
+                  <td>
+                    ${escapeHtml(phone || "—")}
+                  </td>
+
+
+                  <td>
+                    ${escapeHtml(whatsapp || "—")}
+                  </td>
+
 
                   <td>
                     ${escapeHtml(productNames)}
                   </td>
 
+
+                  <td>
+                    ${escapeHtml(location)}
+                  </td>
+
+
                   <td>
                     ${formatNaira(totalPaid)}
                   </td>
+
 
                   <td>
                     ${statusBadge(o.status)}
                   </td>
 
+
                   <td>
-                    ${formatDate(date)}
+                    ${formatDate(o.createdAt)}
                   </td>
 
                 </tr>
+
               `;
 
         }).join("")}
@@ -165,12 +227,18 @@
           </tbody>
 
         </table>
+
       </div>
     `;
 
+
       } catch (err) {
 
-        console.error("ADMIN ORDERS ERROR:", err);
+        console.error(
+          "ADMIN ORDERS ERROR:",
+          err
+        );
+
 
         mount.innerHTML =
           emptyState(
