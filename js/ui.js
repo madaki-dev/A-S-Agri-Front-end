@@ -152,7 +152,7 @@ function renderNavbar(rootPrefix = "") {
   mount.innerHTML = `
     <div class="container navbar__row">
       <a href="${rootPrefix}index.html" class="navbar__logo">
-        <span class="mark">A&amp;S</span> A&amp;S Ventures
+        <span class="mark">A&amp;S</span> A&amp;S Agri
       </a>
       <nav class="navbar__links">${links}</nav>
       ${actionsHtml}
@@ -204,7 +204,7 @@ function renderMobileMenu(rootPrefix = "") {
   const links = NAV_LINKS.map(l => `<a href="${rootPrefix}${l.href}">${l.label}</a>`).join("");
   el.innerHTML = `
     <div class="mobile-menu__top">
-      <a href="${rootPrefix}index.html" class="navbar__logo"><span class="mark">A&amp;S</span> A&amp;S Ventures</a>
+      <a href="${rootPrefix}index.html" class="navbar__logo"><span class="mark">A&amp;S</span> A&amp;S Agri</a>
       <button id="mobile-close-btn" aria-label="Close menu">${ICONS.close}</button>
     </div>
     ${links}
@@ -230,7 +230,7 @@ function renderFooter(rootPrefix = "") {
     <div class="container">
       <div class="footer__grid">
         <div class="footer__brand">
-          <a href="${rootPrefix}index.html" class="navbar__logo"><span class="mark">A&amp;S</span> A&amp;S Ventures</a>
+          <a href="${rootPrefix}index.html" class="navbar__logo"><span class="mark">A&amp;S</span> A&amp;S Agri</a>
           <p>A smarter agricultural marketplace connecting farmers, sellers and buyers across Nigeria.</p>
         </div>
         <div>
@@ -260,13 +260,13 @@ function renderFooter(rootPrefix = "") {
         <div>
           <h4>Legal</h4>
           <ul>
-            <li><a href="#">Privacy policy</a></li>
+            <li><a href="contact.html">Privacy policy</a></li>
             <li><a href="#">Terms of service</a></li>
           </ul>
         </div>
       </div>
       <div class="footer__bottom">
-        <small>© 2026 A&amp;S Ventures. All rights reserved.</small>
+        <small>© 2026 A&amp;S Agri. All rights reserved.</small>
         <div class="footer__social">
           <a href="https://www.facebook.com/share/18DQmC7gsq/?mibextid=wwXIfr" aria-label="Facebook" style="font-size:15px">${ICONS.facebook}</a>
           <a href="https://www.instagram.com/as_venturesofficial?utm_source=qr" aria-label="Instagram" style="font-size:15px">${ICONS.instagram}</a>

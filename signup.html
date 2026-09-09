@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create your account — A&amp;S Ventures</title>
+  <title>Create your account — A&amp;S Agri</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -14,7 +14,7 @@
   <main class="auth-shell">
     <div class="container">
       <div class="auth-card" style="max-width:520px">
-        <h1>Join A&amp;S Ventures</h1>
+        <h1>Join A&amp;S Agri</h1>
         <p class="muted">Create an account to start buying or selling agricultural products.</p>
 
         <form id="signup-form" novalidate>
@@ -103,7 +103,7 @@
             <div class="field" id="f-terms">
               <label class="checkbox-row">
                 <input type="checkbox" id="terms">
-                <span>I agree to A&amp;S Ventures' Terms of Service and Privacy Policy.</span>
+                <span>I agree to A&amp;S Agri's Terms of Service and Privacy Policy.</span>
               </label>
               <div class="error">You need to accept the terms to continue.</div>
             </div>
@@ -156,7 +156,7 @@
         setSession(res.token, res.user);
         const businessName = document.getElementById("businessName").value.trim();
         if (businessName) localStorage.setItem("asv_x_business_" + res.user._id, businessName);
-        toast("Account created — welcome to A&S Ventures.");
+        toast("Account created — welcome to A&S Agri.");
         setTimeout(() => { window.location.href = dashboardHref(); }, 600);
       } catch (err) {
         toast(err.message, "error");
