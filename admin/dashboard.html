@@ -47,7 +47,8 @@
   <script src="../js/ui.js"></script>
   <script>
     const user = requireAuth("../", "Admin");
-    const SIDEBAR_LINKS = [{ href: "dashboard.html", label: "Admin dashboard" }];
+    const SIDEBAR_LINKS = [{ href: "dashboard.html", label: "Admin dashboard" },
+    { href: "admin-payouts.html", label: "Payouts" }];
     if (user) renderDashSidebar(SIDEBAR_LINKS, "dashboard.html", "");
 
     document.querySelectorAll(".pill-nav button").forEach(btn => {
