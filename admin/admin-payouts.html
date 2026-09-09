@@ -614,89 +614,24 @@
            ========================================================= */
 
         async function checkAdminAccess() {
-
-            const token =
-                localStorage.getItem("token");
+            const token = localStorage.getItem("token");
 
             if (!token) {
-
-                window.location.href =
-                    "../login.html";
-
+                window.location.href = "../login.html";
                 return false;
             }
 
-
-            try {
-
-                const response =
-                    await fetch(
-                        "https://a-s-ventures-backend.onrender.com/api/profile",
-                        {
-                            headers: {
-                                Authorization:
-                                    `Bearer ${token}`
-                            }
-                        }
-                    );
-
-
-                const user =
-                    await response.json();
-
-
-                if (!response.ok) {
-
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("accountType");
-
-                    window.location.href =
-                        "../login.html";
-
-                    return false;
-                }
-
-
-                const role =
-                    String(user.role || "")
-                        .toLowerCase();
-
-
-                if (role !== "admin") {
-
-                    alert(
-                        "You do not have permission to access the admin dashboard."
-                    );
-
-                    window.location.href =
-                        "../index.html";
-
-                    return false;
-                }
-
-
-                return true;
-
-            } catch (error) {
-
-                console.error(
-                    "ADMIN AUTH ERROR:",
-                    error
-                );
-
-                /*
-                 * Do not immediately redirect when the backend is
-                 * temporarily unavailable. This prevents the page
-                 * from throwing the user back to login unnecessarily.
-                 */
-
-                showError(
-                    "Could not verify your admin session. Please check your connection and try again."
-                );
-
-                return false;
-            }
-
+            /*
+             * Do not make a second /api/profile request here.
+             *
+             * The admin payouts endpoint is already protected by:
+             * protect middleware + adminOnly middleware.
+             *
+             * This prevents the page from redirecting to login simply
+             * because the profile request fails or Render is temporarily
+             * unavailable.
+             */
+            return true;
         }
 
 
