@@ -40,15 +40,15 @@
       const img = (meta && meta.images && meta.images[0]) || p.image;
       const unit = meta && meta.priceUnit ? meta.priceUnit : "unit";
       return `
-  <div class="card flex gap-16" style="margin-bottom:14px;align-items:center">
-    <div style="width:84px;height:84px;border-radius:10px;overflow:hidden;background:var(--sand);flex-shrink:0">
+  <div class="card cart-item">
+    <div class="cart-item__thumb">
       ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover">` : ""}
     </div>
-    <div style="flex:1">
+    <div class="cart-item__info">
       <a href="product.html?id=${p._id}" style="font-family:var(--font-display);font-weight:600;color:var(--green-900)">${escapeHtml(p.productName)}</a>
       <div class="muted" style="font-size:.85rem">${formatNaira(p.sellingPrice)} / ${escapeHtml(unit)} · Qty ${item.quantity}</div>
     </div>
-    <div style="font-weight:700;color:var(--green-900)">${formatNaira(p.sellingPrice * item.quantity)}</div>
+    <div class="cart-item__price">${formatNaira(p.sellingPrice * item.quantity)}</div>
     <button class="icon-btn" data-remove="${item._id}" aria-label="Remove item">Remove</button>
   </div>`;
     }

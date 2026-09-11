@@ -85,7 +85,6 @@
 
           <div class="hero__cta" style="margin-top:8px">
             ${isOwner ? `<a href="farmer/products.html" class="btn btn-secondary">Manage this listing</a>` : `
-            <button id="contact-seller-btn" class="btn btn-secondary">Contact seller</button>
             <button id="buy-btn" class="btn btn-primary">Add to cart</button>
             `}
           </div>
@@ -128,18 +127,6 @@
           toast(err.message, "error");
           buyBtn.disabled = false; buyBtn.textContent = "Add to cart";
         }
-      });
-
-      const contactBtn = document.getElementById("contact-seller-btn");
-      if (contactBtn) contactBtn.addEventListener("click", () => {
-        if (!user) { toast("Log in to message this seller.", "error"); setTimeout(() => location.href = "login.html", 900); return; }
-        if (!isBuyer) { toast("Only buyers can message sellers.", "error"); return; }
-        const conv = Extras.startOrGetConversation({
-          productId: product._id, productName: product.productName,
-          farmerId: farmer._id, farmerName: farmer.fullName,
-          buyerId: user._id, buyerName: user.fullName
-        });
-        location.href = `buyer/messages.html?conv=${conv.id}`;
       });
 
       // load more products from this seller

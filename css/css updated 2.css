@@ -42,6 +42,36 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* ---------- Page-enter animation ---------- */
+@keyframes page-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Every page's primary content area fades/slides in on load.
+   Covers both <main> (marketing/buyer pages) and .dash__main
+   (farmer dashboard pages, which don't use <main>). */
+main,
+.dash__main {
+  animation: page-fade-up .6s cubic-bezier(.16, .8, .24, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  main,
+  .dash__main {
+    animation: none;
+  }
 }
 
 body {
@@ -50,6 +80,7 @@ body {
   color: var(--ink);
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     radial-gradient(ellipse 58% 28% at 50% 12%, rgba(198, 134, 43, .10) 0%, rgba(198, 134, 43, .045) 42%, transparent 76%),
     radial-gradient(ellipse 72% 42% at 8% 48%, rgba(44, 150, 96, .13) 0%, rgba(44, 150, 96, .055) 42%, transparent 76%),
@@ -491,6 +522,30 @@ p {
   }
 }
 
+@media (max-width:600px) {
+  .navbar__row {
+    height: 64px;
+  }
+
+  .navbar__logo {
+    font-size: 1.1rem;
+  }
+
+  /* Comfortable tap targets on touch screens */
+  .btn {
+    min-height: 44px;
+  }
+
+  .icon-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+
+  .mobile-menu a {
+    padding: 18px 0;
+  }
+}
+
 /* ---------- Footer ---------- */
 .footer {
   background: var(--green-900);
@@ -835,6 +890,73 @@ p {
   margin-top: auto;
 }
 
+/* ---------- Long-form legal content (terms, policies) ---------- */
+.legal-content h2 {
+  margin-top: 40px;
+}
+
+.legal-content h2:first-of-type {
+  margin-top: 0;
+}
+
+.legal-content ul {
+  list-style: disc;
+}
+
+/* ---------- Cart item row ---------- */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.cart-item__thumb {
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--sand);
+  flex-shrink: 0;
+}
+
+.cart-item__info {
+  flex: 1;
+  min-width: 160px;
+}
+
+.cart-item__price {
+  font-weight: 700;
+  color: var(--green-900);
+}
+
+@media (max-width:480px) {
+  .cart-item {
+    position: relative;
+    padding-right: 96px;
+  }
+
+  .cart-item__thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .cart-item__price {
+    order: 3;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    margin-top: 6px;
+  }
+
+  .cart-item button[data-remove] {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+}
+
 /* ---------- Generic cards ---------- */
 .card {
   background: #fff;
@@ -924,7 +1046,7 @@ p {
 
 @media (max-width:520px) {
   .feature-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -944,7 +1066,8 @@ p {
 
 @media (max-width:860px) {
   .split-panel {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 28px;
   }
 
   .split-panel img {
@@ -1329,6 +1452,12 @@ textarea.input {
   }
 }
 
+@media (max-width:480px) {
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 .mobile-dash-toggle {
   display: none;
 }
@@ -1382,6 +1511,7 @@ td {
 
 .table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
   background: #fff;
@@ -1555,6 +1685,8 @@ td {
   gap: 8px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pill-nav button {
@@ -1565,11 +1697,17 @@ td {
   font-weight: 600;
   color: var(--ink-soft);
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 
 .pill-nav button.active {
   color: var(--green-800, var(--green-700));
   border-color: var(--green-700);
+}
+
+#star-picker span {
+  display: inline-block;
+  padding: 4px 6px;
 }
 
 .page-hero {
