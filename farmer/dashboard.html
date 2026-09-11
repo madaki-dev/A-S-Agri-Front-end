@@ -94,7 +94,6 @@
       )}
 </td>
 
-<td>${o.quantity}</td>
           <td>${o.quantity}</td>
           <td>${formatNaira(o.farmerPrice * o.quantity)}</td>
           <td>${statusBadge(o.status)}</td>
@@ -133,7 +132,7 @@
   </div>`;
 
         document.getElementById("orders-table").innerHTML =
-          ordersTableHtml(data.sales || []);
+          ordersTableHtml(data.orders || []);
       } catch (err) {
         toast(err.message, "error");
       }
