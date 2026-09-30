@@ -30,6 +30,7 @@
         <button class="active" data-tab="overview">Overview</button>
         <button data-tab="orders">All Orders</button>
         <button data-tab="sellers">Sellers</button>
+        <button data-tab="transport">Transport</button>
       </div>
 
       <div id="tab-overview">
@@ -37,6 +38,7 @@
       </div>
       <div id="tab-orders" style="display:none"></div>
       <div id="tab-sellers" style="display:none"></div>
+      <div id="tab-transport" style="display:none"></div>
     </div>
   </div>
 
@@ -51,13 +53,70 @@
     { href: "admin-payouts.html", label: "Payouts" }];
     if (user) renderDashSidebar(SIDEBAR_LINKS, "dashboard.html", "");
 
-    document.querySelectorAll(".pill-nav button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".pill-nav button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        ["overview", "orders", "sellers"].forEach(t => document.getElementById("tab-" + t).style.display = t === btn.dataset.tab ? "block" : "none");
+    document
+      .querySelectorAll(".pill-nav button")
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          async () => {
+
+            document
+              .querySelectorAll(
+                ".pill-nav button"
+              )
+              .forEach(b =>
+                b.classList.remove(
+                  "active"
+                )
+              );
+
+            btn.classList.add(
+              "active"
+            );
+
+
+            const tabs = [
+              "overview",
+              "orders",
+              "sellers",
+              "transport"
+            ];
+
+
+            tabs.forEach(tab => {
+
+              const element =
+                document.getElementById(
+                  "tab-" + tab
+                );
+
+              if (element) {
+
+                element.style.display =
+                  tab ===
+                    btn.dataset.tab
+                    ? "block"
+                    : "none";
+
+              }
+
+            });
+
+
+            if (
+              btn.dataset.tab ===
+              "transport"
+            ) {
+
+              await loadTransport();
+
+            }
+
+          }
+        );
+
       });
-    });
 
     function statusBadge(status) { return `<span class="badge badge--status-${(status || "pending").toLowerCase()}">${status}</span>`; }
 
@@ -300,6 +359,662 @@
             Extras.setVerified(id, next);
             toast(next ? "Seller verified." : "Verification revoked.");
             loadSellers();
+
+            async function loadTransport() {
+
+              const mount =
+                document.getElementById(
+                  "tab-transport"
+                );
+
+
+              mount.innerHTML =
+                `<div class="skeleton" style="height:400px"></div>`;
+
+
+              try {
+
+                const [
+                  settings,
+                  routes
+                ] = await Promise.all([
+
+                  API.getTransportSettings(),
+
+                  API.getTransportPrices()
+
+                ]);
+
+
+                mount.innerHTML = `
+
+      <div
+        class="card"
+        style="margin-bottom:24px"
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin-bottom:20px;
+          "
+        >
+
+          <div>
+
+            <h3 style="margin:0">
+              Transport settings
+            </h3>
+
+            <p
+              class="muted"
+              style="margin:4px 0 0"
+            >
+              Update fuel and transport calculation values.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="field-row"
+          style="margin-bottom:16px"
+        >
+
+          <div class="field">
+
+            <label>
+              Base diesel price
+            </label>
+
+            <input
+              class="input"
+              id="transport-base-diesel"
+              type="number"
+              min="0"
+              value="${settings.baseDieselPrice}"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Current diesel price
+            </label>
+
+            <input
+              class="input"
+              id="transport-current-diesel"
+              type="number"
+              min="0"
+              value="${settings.currentDieselPrice}"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="field-row"
+          style="margin-bottom:16px"
+        >
+
+          <div class="field">
+
+            <label>
+              Truck rate / tonne
+            </label>
+
+            <input
+              class="input"
+              id="transport-truck-rate"
+              type="number"
+              min="0"
+              value="${settings.truckRatePerTonne}"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Fuel sensitivity
+            </label>
+
+            <input
+              class="input"
+              id="transport-fuel-sensitivity"
+              type="number"
+              min="0"
+              max="1"
+              step="0.01"
+              value="${settings.fuelSensitivity}"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="field-row"
+          style="margin-bottom:20px"
+        >
+
+          <div class="field">
+
+            <label>
+              Intra-state / 10 bags
+            </label>
+
+            <input
+              class="input"
+              id="transport-intra-state"
+              type="number"
+              min="0"
+              value="${settings.intraStatePerTenBags}"
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="btn btn-primary"
+          id="save-transport-settings"
+        >
+          Save transport settings
+        </button>
+
+      </div>
+
+
+      <div class="card">
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin-bottom:20px;
+          "
+        >
+
+          <div>
+
+            <h3 style="margin:0">
+              Route prices
+            </h3>
+
+            <p
+              class="muted"
+              style="margin:4px 0 0"
+            >
+              ${routes.length} directional routes
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="field" style="margin-bottom:16px">
+
+          <label>
+            Search routes
+          </label>
+
+          <input
+            class="input"
+            id="transport-route-search"
+            placeholder="Search origin or destination..."
+          >
+
+        </div>
+
+
+        <div
+          class="table-wrap"
+          style="max-height:650px;overflow:auto"
+        >
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Origin</th>
+
+                <th>Destination</th>
+
+                <th>Base</th>
+
+                <th>Current</th>
+
+                <th>Travel time</th>
+
+                <th></th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody id="transport-routes-body"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+                function renderRoutes(
+                  search = ""
+                ) {
+
+                  const query =
+                    search
+                      .trim()
+                      .toLowerCase();
+
+
+                  const filtered =
+                    routes.filter(route => {
+
+                      if (!query) {
+                        return true;
+                      }
+
+                      return (
+
+                        String(
+                          route.origin || ""
+                        )
+                          .toLowerCase()
+                          .includes(query)
+
+                        ||
+
+                        String(
+                          route.destination || ""
+                        )
+                          .toLowerCase()
+                          .includes(query)
+
+                      );
+
+                    });
+
+
+                  const body =
+                    document.getElementById(
+                      "transport-routes-body"
+                    );
+
+
+                  if (!filtered.length) {
+
+                    body.innerHTML = `
+          <tr>
+            <td
+              colspan="6"
+              class="muted text-center"
+            >
+              No routes found.
+            </td>
+          </tr>
+        `;
+
+                    return;
+
+                  }
+
+
+                  body.innerHTML =
+                    filtered
+                      .map(route => `
+
+            <tr>
+
+              <td>
+                ${escapeHtml(
+                        route.origin
+                      )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                        route.destination
+                      )}
+              </td>
+
+              <td>
+                ${formatNaira(
+                        route.basePrice
+                      )}
+              </td>
+
+              <td>
+                <strong>
+                  ${formatNaira(
+                        route.currentPrice
+                      )}
+                </strong>
+              </td>
+
+              <td>
+                ${escapeHtml(
+                        route.travelTime ||
+                        "—"
+                      )}
+              </td>
+
+              <td>
+
+                <button
+                  class="icon-btn"
+                  data-edit-transport="${route._id}"
+                >
+                  Edit
+                </button>
+
+              </td>
+
+            </tr>
+
+          `)
+                      .join("");
+
+
+                  body
+                    .querySelectorAll(
+                      "[data-edit-transport]"
+                    )
+                    .forEach(button => {
+
+                      button.addEventListener(
+                        "click",
+                        async () => {
+
+                          const id =
+                            button.dataset
+                              .editTransport;
+
+
+                          const route =
+                            routes.find(
+                              r =>
+                                String(
+                                  r._id
+                                ) ===
+                                String(id)
+                            );
+
+
+                          if (!route) {
+                            return;
+                          }
+
+
+                          const currentPrice =
+                            window.prompt(
+                              `Current price for ${route.origin} → ${route.destination}`,
+                              route.currentPrice
+                            );
+
+
+                          if (
+                            currentPrice ===
+                            null
+                          ) {
+
+                            return;
+
+                          }
+
+
+                          const price =
+                            Number(
+                              currentPrice
+                            );
+
+
+                          if (
+                            !Number.isFinite(price) ||
+                            price < 0
+                          ) {
+
+                            toast(
+                              "Enter a valid transport price.",
+                              "error"
+                            );
+
+                            return;
+
+                          }
+
+
+                          try {
+
+                            button.disabled =
+                              true;
+
+                            button.textContent =
+                              "Saving…";
+
+
+                            const result =
+                              await API.updateTransportRoute(
+                                route._id,
+                                {
+                                  currentPrice:
+                                    price
+                                }
+                              );
+
+
+                            const index =
+                              routes.findIndex(
+                                r =>
+                                  String(
+                                    r._id
+                                  ) ===
+                                  String(
+                                    route._id
+                                  )
+                              );
+
+
+                            if (index !== -1) {
+
+                              routes[index] =
+                                result.route;
+
+                            }
+
+
+                            renderRoutes(
+                              document
+                                .getElementById(
+                                  "transport-route-search"
+                                )
+                                .value
+                            );
+
+
+                            toast(
+                              "Route price updated."
+                            );
+
+                          } catch (err) {
+
+                            toast(
+                              err.message,
+                              "error"
+                            );
+
+                            button.disabled =
+                              false;
+
+                            button.textContent =
+                              "Edit";
+
+                          }
+
+                        }
+                      );
+
+                    });
+
+                }
+
+
+                renderRoutes();
+
+
+                document
+                  .getElementById(
+                    "transport-route-search"
+                  )
+                  .addEventListener(
+                    "input",
+                    event => {
+
+                      renderRoutes(
+                        event.target.value
+                      );
+
+                    }
+                  );
+
+
+                document
+                  .getElementById(
+                    "save-transport-settings"
+                  )
+                  .addEventListener(
+                    "click",
+                    async () => {
+
+                      const button =
+                        document.getElementById(
+                          "save-transport-settings"
+                        );
+
+
+                      const payload = {
+
+                        baseDieselPrice:
+                          Number(
+                            document.getElementById(
+                              "transport-base-diesel"
+                            ).value
+                          ),
+
+                        currentDieselPrice:
+                          Number(
+                            document.getElementById(
+                              "transport-current-diesel"
+                            ).value
+                          ),
+
+                        truckRatePerTonne:
+                          Number(
+                            document.getElementById(
+                              "transport-truck-rate"
+                            ).value
+                          ),
+
+                        fuelSensitivity:
+                          Number(
+                            document.getElementById(
+                              "transport-fuel-sensitivity"
+                            ).value
+                          ),
+
+                        intraStatePerTenBags:
+                          Number(
+                            document.getElementById(
+                              "transport-intra-state"
+                            ).value
+                          )
+
+                      };
+
+
+                      try {
+
+                        button.disabled =
+                          true;
+
+                        button.textContent =
+                          "Saving…";
+
+
+                        await API.updateTransportSettings(
+                          payload
+                        );
+
+
+                        toast(
+                          "Transport settings updated."
+                        );
+
+
+                      } catch (err) {
+
+                        toast(
+                          err.message,
+                          "error"
+                        );
+
+                      } finally {
+
+                        button.disabled =
+                          false;
+
+                        button.textContent =
+                          "Save transport settings";
+
+                      }
+
+                    }
+                  );
+
+
+              } catch (err) {
+
+                console.error(
+                  "TRANSPORT ADMIN ERROR:",
+                  err
+                );
+
+
+                mount.innerHTML =
+                  emptyState(
+                    "Couldn't load transport settings",
+                    err.message
+                  );
+
+              }
+
+            }
+
           });
         });
       } catch (err) {

@@ -101,8 +101,62 @@ const API = {
   verifyPayment: (transactionId) => apiRequest(`/payment/verify/${transactionId}`, { method: "POST" }),
 
   // ---- Transport ----
-  getTransportPrices: () => apiRequest("/transport/prices"),
-  getTransportPriceForState: (state) => apiRequest(`/transport/prices/${encodeURIComponent(state)}`),
+
+  // ---- Transport ----
+
+  getTransportPrices:
+    () =>
+      apiRequest(
+        "/transport/prices"
+      ),
+
+  getTransportLocations:
+    () =>
+      apiRequest(
+        "/transport/locations"
+      ),
+
+  getTransportRoute:
+    (origin, destination) =>
+      apiRequest(
+        `/transport/route/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}`
+      ),
+
+  getTransportSettings:
+    () =>
+      apiRequest(
+        "/transport/settings"
+      ),
+
+  updateTransportSettings:
+    (payload) =>
+      apiRequest(
+        "/transport/settings",
+        {
+          method: "PATCH",
+          body: payload
+        }
+      ),
+
+  updateTransportRoute:
+    (id, payload) =>
+      apiRequest(
+        `/transport/${id}`,
+        {
+          method: "PATCH",
+          body: payload
+        }
+      ),
+
+  calculateTransport:
+    (payload) =>
+      apiRequest(
+        "/transport/calculate",
+        {
+          method: "POST",
+          body: payload
+        }
+      ),
 
   // ---- Farmer dashboard ----
   getFarmerDashboard: () => apiRequest("/farmer-dashboard"),

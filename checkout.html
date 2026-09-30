@@ -61,90 +61,753 @@
   <script src="js/ui.js"></script>
   <script>
     const user = requireAuth("", "Buyer");
+
     let CART = [];
     let SUBTOTAL = 0;
+    let CURRENT_TRANSPORT = null;
+
+
+    // --------------------------------------------------
+    // BUILD CART PAYLOAD
+    // --------------------------------------------------
+
+    function getCartPayload() {
+
+      return CART.map(item => ({
+        productId:
+          item.product?._id,
+
+        quantity:
+          Number(item.quantity)
+      }));
+
+    }
+
+
+    // --------------------------------------------------
+    // LOAD CART
+    // --------------------------------------------------
 
     async function loadSummary() {
-      const body = document.getElementById("summary-body");
+
+      const body =
+        document.getElementById(
+          "summary-body"
+        );
+
       try {
-        CART = await API.getCart();
+
+        CART =
+          await API.getCart();
+
+
         if (!CART.length) {
-          body.innerHTML = emptyState("Your cart is empty", "Add products before checking out.");
-          document.getElementById("pay-btn").disabled = true;
+
+          body.innerHTML =
+            emptyState(
+              "Your cart is empty",
+              "Add products before checking out."
+            );
+
+          document.getElementById(
+            "pay-btn"
+          ).disabled = true;
+
           return;
         }
-        SUBTOTAL = CART.reduce((s, i) => s + (i.product ? i.product.sellingPrice * i.quantity : 0), 0);
-        body.innerHTML = CART.map(i => `
-      <div class="flex-between" style="margin-bottom:8px;font-size:.9rem">
-        <span>${escapeHtml(i.product?.productName || "Product")} × ${i.quantity}</span>
-        <span>${formatNaira((i.product?.sellingPrice || 0) * i.quantity)}</span>
-      </div>`).join("") +
-          `<div class="divider"></div>
-       <div class="flex-between"><span class="muted">Subtotal</span><strong>${formatNaira(SUBTOTAL)}</strong></div>
-       <div class="flex-between" id="transport-row"><span class="muted">Delivery</span><span class="muted">Select a state</span></div>
-       <div class="divider"></div>
-       <div class="flex-between" style="font-size:1.1rem"><strong>Total</strong><strong id="total-value">${formatNaira(SUBTOTAL)}</strong></div>`;
+
+
+        SUBTOTAL =
+          CART.reduce(
+            (sum, item) => {
+
+              const price =
+                Number(
+                  item.product?.sellingPrice || 0
+                );
+
+              return (
+                sum +
+                price *
+                Number(
+                  item.quantity || 0
+                )
+              );
+
+            },
+            0
+          );
+
+
+        renderSummary();
+
       } catch (err) {
-        body.innerHTML = emptyState("Couldn't load your cart", err.message);
+
+        body.innerHTML =
+          emptyState(
+            "Couldn't load your cart",
+            err.message
+          );
+
       }
+
     }
+
+
+    // --------------------------------------------------
+    // RENDER SUMMARY
+    // --------------------------------------------------
+
+    function renderSummary() {
+
+      const body =
+        document.getElementById(
+          "summary-body"
+        );
+
+
+      body.innerHTML =
+
+        CART
+          .map(item => `
+
+                    <div
+                        class="flex-between"
+                        style="margin-bottom:8px;font-size:.9rem"
+                    >
+
+                        <span>
+                            ${escapeHtml(
+            item.product?.productName ||
+            "Product"
+          )}
+
+                            ×
+
+                            ${item.quantity}
+                        </span>
+
+                        <span>
+                            ${formatNaira(
+            (
+              Number(
+                item.product?.sellingPrice || 0
+              ) *
+              Number(
+                item.quantity || 0
+              )
+            )
+          )}
+                        </span>
+
+                    </div>
+
+                `)
+          .join("")
+
+        +
+
+        `
+                <div class="divider"></div>
+
+                <div class="flex-between">
+                    <span class="muted">
+                        Subtotal
+                    </span>
+
+                    <strong>
+                        ${formatNaira(SUBTOTAL)}
+                    </strong>
+                </div>
+
+                <div
+                    class="flex-between"
+                    id="transport-row"
+                >
+                    <span class="muted">
+                        Delivery
+                    </span>
+
+                    <span class="muted">
+                        Select a state
+                    </span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div
+                    class="flex-between"
+                    style="font-size:1.1rem"
+                >
+                    <strong>
+                        Total
+                    </strong>
+
+                    <strong id="total-value">
+                        ${formatNaira(SUBTOTAL)}
+                    </strong>
+                </div>
+            `;
+
+    }
+
+
+    // --------------------------------------------------
+    // LOAD DELIVERY STATES
+    // --------------------------------------------------
 
     async function loadStates() {
-      const sel = document.getElementById("state");
+
+      const select =
+        document.getElementById(
+          "state"
+        );
+
       try {
-        const prices = await API.getTransportPrices();
-        prices.forEach(t => {
-          const opt = document.createElement("option");
-          opt.value = t.state; opt.textContent = t.state; opt.dataset.price = t.transportPrice;
-          sel.appendChild(opt);
+
+        const states =
+          await API.getTransportLocations();
+
+
+        states.forEach(state => {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+          option.value =
+            state;
+
+          option.textContent =
+            state;
+
+          select.appendChild(
+            option
+          );
+
         });
-      } catch (err) { toast("Couldn't load delivery pricing.", "error"); }
+
+      } catch (err) {
+
+        toast(
+          "Couldn't load delivery states.",
+          "error"
+        );
+
+      }
+
     }
 
-    document.getElementById("state").addEventListener("change", (e) => {
-      const opt = e.target.selectedOptions[0];
-      const price = opt?.dataset.price ? Number(opt.dataset.price) : null;
-      const row = document.getElementById("transport-row");
-      const totalEl = document.getElementById("total-value");
-      if (row) {
-        row.innerHTML = `<span class="muted">Delivery</span><span>${price != null ? formatNaira(price) : "—"}</span>`;
-      }
-      if (totalEl && price != null) totalEl.textContent = formatNaira(SUBTOTAL + price);
-    });
 
-    document.getElementById("checkout-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fullname = document.getElementById("fullname").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const whatsapp = document.getElementById("whatsapp").value.trim();
-      const state = document.getElementById("state").value;
-      const address = document.getElementById("address").value.trim();
+    // --------------------------------------------------
+    // CALCULATE DELIVERY
+    // --------------------------------------------------
 
-      let ok = true;
-      const check = (id, valid) => { document.getElementById(id).classList.toggle("has-error", !valid); ok = ok && valid; };
-      check("f-fullname", !!fullname);
-      check("f-phone", !!phone);
-      check("f-whatsapp", !!whatsapp);
-      check("f-state", !!state);
-      check("f-address", !!address);
-      if (!ok) { toast("Please complete every field.", "error"); return; }
+    async function calculateDelivery(
+      destination
+    ) {
 
-      const btn = document.getElementById("pay-btn");
-      btn.disabled = true; btn.textContent = "Redirecting to payment…";
-      try {
-        const res = await API.initializePayment({ fullname, phone, whatsapp, state, address });
-        if (res.paymentLink) {
-          window.location.href = res.paymentLink;
-        } else {
-          throw new Error("Payment link was not returned.");
+      const row =
+        document.getElementById(
+          "transport-row"
+        );
+
+      const total =
+        document.getElementById(
+          "total-value"
+        );
+
+
+      if (!destination) {
+
+        CURRENT_TRANSPORT = null;
+
+
+        if (row) {
+
+          row.innerHTML =
+            `
+                        <span class="muted">
+                            Delivery
+                        </span>
+
+                        <span class="muted">
+                            Select a state
+                        </span>
+                    `;
+
         }
-      } catch (err) {
-        toast(err.message, "error");
-        btn.disabled = false; btn.textContent = "Continue to payment";
-      }
-    });
 
-    if (user) { loadSummary(); loadStates(); }
+
+        if (total) {
+
+          total.textContent =
+            formatNaira(
+              SUBTOTAL
+            );
+
+        }
+
+        return;
+
+      }
+
+
+      /*
+       * Make sure the cart still exists
+       * before calculating transport.
+       */
+
+      if (!CART.length) {
+
+        CURRENT_TRANSPORT = null;
+
+        return;
+
+      }
+
+
+      if (row) {
+
+        row.innerHTML =
+          `
+                    <span class="muted">
+                        Delivery
+                    </span>
+
+                    <span class="muted">
+                        Calculating…
+                    </span>
+                `;
+
+      }
+
+
+      try {
+
+        const cart =
+          getCartPayload();
+
+
+        /*
+         * Make sure every cart item has
+         * a valid product ID and quantity.
+         */
+
+        if (
+          cart.some(
+            item =>
+              !item.productId ||
+              !Number.isInteger(
+                item.quantity
+              ) ||
+              item.quantity <= 0
+          )
+        ) {
+
+          throw new Error(
+            "One or more cart items are invalid."
+          );
+
+        }
+
+
+        const result =
+          await API.calculateTransport({
+
+            cart,
+
+            destination
+
+          });
+
+
+        CURRENT_TRANSPORT =
+          result;
+
+
+        const fee =
+          Number(
+            result.transportFee || 0
+          );
+
+
+        if (
+          !Number.isFinite(fee) ||
+          fee < 0
+        ) {
+
+          throw new Error(
+            "Invalid transport price returned."
+          );
+
+        }
+
+
+        if (row) {
+
+          row.innerHTML =
+            `
+                        <span class="muted">
+                            Delivery
+                        </span>
+
+                        <span>
+                            ${formatNaira(fee)}
+                        </span>
+                    `;
+
+        }
+
+
+        if (total) {
+
+          total.textContent =
+            formatNaira(
+              SUBTOTAL + fee
+            );
+
+        }
+
+      } catch (err) {
+
+        CURRENT_TRANSPORT = null;
+
+
+        if (row) {
+
+          row.innerHTML =
+            `
+                        <span class="muted">
+                            Delivery
+                        </span>
+
+                        <span
+                            class="muted"
+                            style="color:#b42318"
+                        >
+                            Unavailable
+                        </span>
+                    `;
+
+        }
+
+
+        if (total) {
+
+          total.textContent =
+            formatNaira(
+              SUBTOTAL
+            );
+
+        }
+
+
+        toast(
+          err.message ||
+          "Couldn't calculate delivery.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    // --------------------------------------------------
+    // STATE CHANGE
+    // --------------------------------------------------
+
+    document
+      .getElementById("state")
+      .addEventListener(
+        "change",
+        async (event) => {
+
+          await calculateDelivery(
+            event.target.value
+          );
+
+        }
+      );
+
+
+    // --------------------------------------------------
+    // CHECKOUT
+    // --------------------------------------------------
+
+    document
+      .getElementById(
+        "checkout-form"
+      )
+      .addEventListener(
+        "submit",
+        async (event) => {
+
+          event.preventDefault();
+
+
+          const fullname =
+            document
+              .getElementById(
+                "fullname"
+              )
+              .value
+              .trim();
+
+
+          const phone =
+            document
+              .getElementById(
+                "phone"
+              )
+              .value
+              .trim();
+
+
+          const whatsapp =
+            document
+              .getElementById(
+                "whatsapp"
+              )
+              .value
+              .trim();
+
+
+          const state =
+            document
+              .getElementById(
+                "state"
+              )
+              .value;
+
+
+          const address =
+            document
+              .getElementById(
+                "address"
+              )
+              .value
+              .trim();
+
+
+          let ok = true;
+
+
+          const check =
+            (
+              id,
+              valid
+            ) => {
+
+              document
+                .getElementById(id)
+                .classList
+                .toggle(
+                  "has-error",
+                  !valid
+                );
+
+              ok =
+                ok &&
+                valid;
+
+            };
+
+
+          check(
+            "f-fullname",
+            !!fullname
+          );
+
+
+          check(
+            "f-phone",
+            !!phone
+          );
+
+
+          check(
+            "f-whatsapp",
+            !!whatsapp
+          );
+
+
+          check(
+            "f-state",
+            !!state
+          );
+
+
+          check(
+            "f-address",
+            !!address
+          );
+
+
+          if (!ok) {
+
+            toast(
+              "Please complete every field.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Build the cart directly from the
+           * current cart state.
+           */
+
+          const cart =
+            getCartPayload();
+
+
+          if (!cart.length) {
+
+            toast(
+              "Your cart is empty.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Require a valid transport calculation
+           * before starting payment.
+           */
+
+          if (!CURRENT_TRANSPORT) {
+
+            toast(
+              "Please select your delivery state so we can calculate transport.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Re-check that the selected destination
+           * still has a transport calculation.
+           */
+
+          if (
+            CURRENT_TRANSPORT.destination &&
+            CURRENT_TRANSPORT.destination !== state
+          ) {
+
+            toast(
+              "Please recalculate delivery for your selected state.",
+              "error"
+            );
+
+            await calculateDelivery(
+              state
+            );
+
+            return;
+
+          }
+
+
+          const btn =
+            document.getElementById(
+              "pay-btn"
+            );
+
+
+          btn.disabled = true;
+
+          btn.textContent =
+            "Redirecting to payment…";
+
+
+          try {
+
+            /*
+             * The backend independently recalculates
+             * transport and product totals from MongoDB.
+             *
+             * The frontend transport result is only
+             * for display and validation.
+             */
+
+            const res =
+              await API.initializePayment({
+
+                fullname,
+
+                phone,
+
+                whatsapp,
+
+                state,
+
+                address,
+
+                cart
+
+              });
+
+
+            if (
+              res.paymentLink
+            ) {
+
+              window.location.href =
+                res.paymentLink;
+
+            } else {
+
+              throw new Error(
+                "Payment link was not returned."
+              );
+
+            }
+
+          } catch (err) {
+
+            toast(
+              err.message ||
+              "Unable to initialize payment.",
+              "error"
+            );
+
+
+            btn.disabled =
+              false;
+
+            btn.textContent =
+              "Continue to payment";
+
+          }
+
+        }
+      );
+
+
+    // --------------------------------------------------
+    // INIT
+    // --------------------------------------------------
+
+    if (user) {
+
+      loadSummary();
+
+      loadStates();
+
+    }
+
   </script>
 </body>
 
