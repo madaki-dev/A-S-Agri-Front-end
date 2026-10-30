@@ -802,65 +802,6 @@ p {
 }
 
 
-/* Hero with looping video background */
-.hero--video {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-
-  padding: 96px 0 120px;
-
-  background: #123822 url("../media/hero-poster.jpg") center / cover no-repeat;
-}
-
-.hero__video {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-}
-
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-
-  background: linear-gradient(90deg,
-      rgba(10, 32, 20, .84) 0%,
-      rgba(10, 32, 20, .62) 55%,
-      rgba(10, 32, 20, .38) 100%);
-}
-
-.hero--video h1,
-.hero--video .hero__eyebrow {
-  color: #fff;
-}
-
-.hero--video .lede {
-  color: rgba(255, 255, 255, .9);
-}
-
-.hero--video .btn-secondary {
-  color: #fff;
-  border-color: #fff;
-}
-
-.hero--video .btn-secondary:hover {
-  color: var(--green-900);
-  background: #fff;
-}
-
-/* Respect "reduce motion": show the still poster instead of the video */
-@media (prefers-reduced-motion: reduce) {
-  .hero__video {
-    display: none;
-  }
-}
-
 /* ============================================================
    PRODUCT GRID
    ============================================================ */
@@ -3346,5 +3287,267 @@ body.no-scroll {
     text-align: left;
     text-transform: uppercase;
     letter-spacing: .04em;
+  }
+}
+
+
+/* ============================================================
+   SITE-WIDE VIDEO BACKGROUND
+   A fixed video (injected by js/ui.js as .site-bg) sits behind every
+   page, tinted by a dark overlay (body::before). Text that sits
+   directly on the page is light; white "surfaces" (cards, forms,
+   tables, modals, the navbar) keep their original dark text.
+   To switch it off: delete this whole block.
+   ============================================================ */
+
+html {
+  /* poster shows instantly, and stays if the video can't play */
+  background: #0c2416 url("../media/hero-poster.jpg") center / cover no-repeat fixed;
+}
+
+body {
+  color: #EEF4EC;
+  background: transparent;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: linear-gradient(180deg,
+      rgba(8, 28, 17, .74) 0%,
+      rgba(8, 28, 17, .64) 50%,
+      rgba(8, 28, 17, .76) 100%);
+
+  filter: none;
+  opacity: 1;
+}
+
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  /* still frame for when the video can't play; position:fixed works on iPhones, background-attachment:fixed doesn't */
+  background: #0c2416 url("../media/hero-poster.jpg") center / cover no-repeat;
+}
+
+.site-bg video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- text sitting directly on the video ---- */
+h1,
+h2,
+h3,
+h4,
+.hero__eyebrow {
+  color: #fff;
+}
+
+p,
+.lede,
+.muted,
+.breadcrumb,
+.breadcrumb a,
+.empty-state,
+.auth-switch {
+  color: rgba(255, 255, 255, .88);
+}
+
+.breadcrumb a:hover,
+.auth-switch a {
+  color: #fff;
+}
+
+.empty-state h3 {
+  color: #fff;
+}
+
+.section--sand {
+  background: rgba(6, 22, 13, .38);
+}
+
+.section--dark {
+  background: rgba(30, 81, 51, .88);
+}
+
+.footer {
+  background: rgba(18, 56, 34, .92);
+}
+
+.btn-secondary,
+.btn-ghost {
+  color: #fff;
+  border-color: rgba(255, 255, 255, .75);
+}
+
+.btn-secondary:hover,
+.btn-ghost:hover {
+  color: var(--green-900);
+  background: #fff;
+}
+
+/* ---- navbar sits straight on the video ---- */
+.navbar__logo,
+.navbar__menu-btn {
+  color: #fff;
+}
+
+.navbar__links a {
+  color: rgba(255, 255, 255, .84);
+}
+
+.navbar__links a:hover,
+.navbar__links a.active {
+  color: #fff;
+  border-color: #7FD6A3;
+}
+
+/* the slide-out mobile menu is a light surface */
+.mobile-menu .navbar__logo {
+  color: var(--green-900);
+}
+
+/* ---- other page-level text ---- */
+.footer__bottom small {
+  color: #A9BBAA;
+}
+
+.step__num {
+  color: #E9B866;
+}
+
+.stat-row,
+.stat-row__item,
+.pill-nav {
+  border-color: rgba(255, 255, 255, .25);
+}
+
+.stat-row__num {
+  color: #fff;
+}
+
+.stat-row__label,
+.results-count,
+.legal-content li {
+  color: rgba(255, 255, 255, .88);
+}
+
+.legal-content a:not(.chip) {
+  color: #C4F0D3;
+  text-decoration: underline;
+}
+
+.split-panel > div > .product-card__price {
+  color: #fff;
+}
+
+.pill-nav button {
+  color: rgba(255, 255, 255, .84);
+}
+
+.pill-nav button.active {
+  color: #fff;
+  border-color: #fff;
+}
+
+/* ---- story photos: tinted green so they sit in the video instead of clashing with it ---- */
+.img-tint {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  line-height: 0;
+
+  border-radius: var(--radius-l);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .38);
+}
+
+.img-tint img {
+  display: block;
+  border-radius: 0;
+  box-shadow: none;
+  filter: saturate(.8) brightness(.88);
+}
+
+.img-tint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background: linear-gradient(160deg, rgba(24, 88, 52, .40), rgba(8, 30, 18, .55));
+  box-shadow: inset 0 0 70px rgba(6, 22, 13, .55);
+}
+
+/* ---- white surfaces keep the original dark-on-light text ---- */
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip) {
+  color: var(--ink);
+}
+
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip)
+:is(h1, h2, h3, h4) {
+  color: var(--green-900);
+}
+
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip)
+:is(p, .lede, .muted, .breadcrumb, .breadcrumb a, .empty-state, .auth-switch) {
+  color: var(--ink-soft);
+}
+
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip)
+:is(.btn-secondary, .btn-ghost) {
+  color: var(--green-900);
+  border-color: var(--green-900);
+}
+
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip)
+:is(.btn-secondary, .btn-ghost):hover {
+  color: #fff;
+  background: var(--green-900);
+}
+
+:is(.card, .product-card, .feature-card, .service-card, .auth-card, .stat-card,
+  .table-wrap, .modal, .navbar, .navbar__dropdown, .mobile-menu, .radio-card, .chip)
+.auth-switch a {
+  color: var(--green-700);
+}
+
+
+/* ---- frosted-glass cards: see-through enough to show the video, with the video blurred
+        behind them so the text stays readable. Raise the .74 for more solid, lower for clearer. ---- */
+:is(.card, .feature-card, .service-card, .product-card, .stat-card) {
+  background: rgba(255, 255, 255, .74);
+  border-color: rgba(255, 255, 255, .45);
+
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+}
+
+/* login / signup forms: a little more solid, since people are typing in them */
+.auth-card {
+  background: rgba(255, 255, 255, .86);
+  border-color: rgba(255, 255, 255, .5);
+
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+}
+
+/* browsers without backdrop-filter get a more solid card so text is still readable */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(.card, .feature-card, .service-card, .product-card, .stat-card, .auth-card) {
+    background: rgba(255, 255, 255, .92);
   }
 }

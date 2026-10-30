@@ -226,6 +226,7 @@ function renderMobileMenu(rootPrefix = "") {
 function renderFooter(rootPrefix = "") {
   const mount = document.getElementById("footer");
   if (!mount) return;
+  mount.classList.add("footer"); // the dark-green footer styles in style.css hang off this class
   mount.innerHTML = `
     <div class="container">
       <div class="footer__grid">
@@ -322,7 +323,7 @@ function renderDashSidebar(links, activeHref, rootPrefix = "") {
       <button id="dash-sidebar-close" class="navbar__menu-btn" style="display:none;color:#fff">${ICONS.close}</button>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:.8rem;color:#9FB29F">Signed in as</div>
+      <div style="font-size:.8rem;color:#B9C9BA">Signed in as</div>
       <strong style="color:#fff">${escapeHtml(user?.fullName || "")}</strong>
     </div>
     ${itemsHtml}
@@ -340,8 +341,50 @@ function toggleDashSidebar() {
   document.getElementById("dash-sidebar")?.classList.toggle("open");
 }
 
+// ---------------- Site-wide video background ----------------
+// A fixed, muted, looping video sits behind every page. The still poster (also set
+// as the page background in CSS) shows while it loads, when the visitor has "reduce
+// motion" or Data Saver on, or when a phone blocks autoplay.
+function initSiteBackground(rootPrefix = "") {
+  if (document.querySelector(".site-bg")) return;
+  const wrap = document.createElement("div");
+  wrap.className = "site-bg";
+  wrap.setAttribute("aria-hidden", "true");
+
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const saveData = navigator.connection && navigator.connection.saveData;
+
+  if (!reduceMotion && !saveData) {
+    const v = document.createElement("video");
+    v.muted = true; v.defaultMuted = true;
+    v.loop = true; v.autoplay = true; v.playsInline = true;
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+    v.preload = "auto";
+    v.poster = rootPrefix + "media/hero-poster.jpg";
+    v.src = rootPrefix + "media/hero-bg.mp4";
+
+    // Pick up where the last page left off so moving between pages doesn't restart the clip.
+    const KEY = "as-bg-time";
+    v.addEventListener("loadedmetadata", () => {
+      try {
+        const t = parseFloat(sessionStorage.getItem(KEY));
+        if (t > 0 && t < v.duration) v.currentTime = t;
+      } catch (e) { /* storage blocked: start from 0 */ }
+    });
+    window.addEventListener("pagehide", () => {
+      try { sessionStorage.setItem(KEY, String(v.currentTime)); } catch (e) { }
+    });
+
+    wrap.appendChild(v);
+    const tryPlay = v.play();
+    if (tryPlay && tryPlay.catch) tryPlay.catch(() => { });
+  }
+  document.body.prepend(wrap);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const prefix = document.body.dataset.rootPrefix || "";
+  initSiteBackground(prefix);
   renderNavbar(prefix);
   renderFooter(prefix);
 });
