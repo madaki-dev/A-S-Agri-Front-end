@@ -3551,3 +3551,38 @@ p,
     background: rgba(255, 255, 255, .92);
   }
 }
+
+
+/* FIX: Account dropdown appearing behind page content */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 400;
+  isolation: isolate;
+}
+
+.navbar__user {
+  position: relative;
+  z-index: 401;
+}
+
+.navbar__dropdown {
+  position: absolute;
+  z-index: 402;
+
+  background: #fff;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navbar__dropdown.open {
+  display: block;
+}
+
+.navbar__dropdown a,
+.navbar__dropdown button {
+  position: relative;
+  z-index: 403;
+  pointer-events: auto;
+  cursor: pointer;
+}
